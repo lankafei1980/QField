@@ -26,34 +26,34 @@
     <name>AbstractGnssReceiver</name>
     <message>
         <source>Connecting…</source>
-        <translation type="unfinished"/>
+        <translation>正在连接…</translation>
     </message>
     <message>
         <source>Successfully connected</source>
-        <translation type="unfinished"/>
+        <translation>已成功连接</translation>
     </message>
     <message>
         <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <translation>已断开</translation>
     </message>
     <message>
         <source>Socket state %1</source>
-        <translation type="unfinished"/>
+        <translation>套接字状态 %1</translation>
     </message>
 </context>
 <context>
     <name>ActiveLayerFeaturesLocatorFilter</name>
     <message>
         <source>Open form</source>
-        <translation type="unfinished"/>
+        <translation>打开表单</translation>
     </message>
     <message>
         <source>Set feature as destination</source>
-        <translation type="unfinished"/>
+        <translation>将要素设为目的地</translation>
     </message>
     <message>
         <source>Feature has no geometry</source>
-        <translation type="unfinished"/>
+        <translation>要素没有几何图形</translation>
     </message>
 </context>
 <context>
@@ -298,19 +298,19 @@ Cancel to make a minimal device scan instead.</source>
     <name>BookmarkList</name>
     <message>
         <source>Untitled bookmark</source>
-        <translation type="unfinished"/>
+        <translation>无标题书签</translation>
     </message>
     <message>
         <source>Bookmark details copied to clipboard</source>
-        <translation type="unfinished"/>
+        <translation>书签详情已复制到剪贴板</translation>
     </message>
     <message>
         <source>Remove bookmark</source>
-        <translation type="unfinished"/>
+        <translation>移除书签</translation>
     </message>
     <message>
         <source>You are about to remove a bookmark, proceed?</source>
-        <translation type="unfinished"/>
+        <translation>即将移除一个书签，是否继续？</translation>
     </message>
 </context>
 <context>
@@ -460,7 +460,7 @@ Cancel to make a minimal device scan instead.</source>
     <name>CodeReader</name>
     <message>
         <source>Code Reader</source>
-        <translation type="unfinished"/>
+        <translation>条码扫描</translation>
     </message>
 </context>
 <context>
@@ -475,7 +475,7 @@ Cancel to make a minimal device scan instead.</source>
     </message>
     <message>
         <source>Project Folder</source>
-        <translation type="unfinished"/>
+        <translation>工程文件夹</translation>
     </message>
 </context>
 <context>
@@ -577,23 +577,23 @@ Cancel to make a minimal device scan instead.</source>
     <name>EgenioussReceiver</name>
     <message>
         <source>Successfully connected</source>
-        <translation type="unfinished"/>
+        <translation>已成功连接</translation>
     </message>
     <message>
         <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <translation>已断开</translation>
     </message>
     <message>
         <source>Could not find the remote host</source>
-        <translation type="unfinished"/>
+        <translation>无法找到远程主机</translation>
     </message>
     <message>
         <source>Attempt to read or write from socket returned an error</source>
-        <translation type="unfinished"/>
+        <translation>套接字读写返回错误</translation>
     </message>
     <message>
         <source>The connection was refused by the remote host</source>
-        <translation type="unfinished"/>
+        <translation>远程主机拒绝了连接</translation>
     </message>
 </context>
 <context>
@@ -626,7 +626,7 @@ Cancel to make a minimal device scan instead.</source>
     </message>
     <message>
         <source>NULL</source>
-        <translation type="unfinished"/>
+        <translation>NULL</translation>
     </message>
 </context>
 <context>
@@ -762,7 +762,7 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
     </message>
     <message>
         <source>Features</source>
-        <translation type="unfinished"/>
+        <translation>要素</translation>
     </message>
 </context>
 <context>
@@ -841,31 +841,31 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
     <name>FillRing</name>
     <message>
         <source>The ring is not closed</source>
-        <translation type="unfinished"/>
+        <translation>环未闭合</translation>
     </message>
     <message>
         <source>The ring is not valid</source>
-        <translation type="unfinished"/>
+        <translation>环无效</translation>
     </message>
     <message>
         <source>The ring crosses existing rings (it is not disjoint)</source>
-        <translation type="unfinished"/>
+        <translation>环与现有环相交（非不相交）</translation>
     </message>
     <message>
         <source>The ring doesn&apos;t have any existing ring to fit into</source>
-        <translation type="unfinished"/>
+        <translation>没有可填入的现有环</translation>
     </message>
     <message>
         <source>Unknown error when creating the ring</source>
-        <translation type="unfinished"/>
+        <translation>创建环时发生未知错误</translation>
     </message>
     <message>
         <source>Fill ring</source>
-        <translation type="unfinished"/>
+        <translation>填充环</translation>
     </message>
     <message>
         <source>Would you like to fill the ring with a new polygon?</source>
-        <translation type="unfinished"/>
+        <translation>是否用新的多边形填充该环？</translation>
     </message>
 </context>
 <context>
@@ -956,7 +956,7 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
     <name>InformationDrawer</name>
     <message>
         <source>Positioning</source>
-        <translation type="unfinished"/>
+        <translation>定位</translation>
     </message>
 </context>
 <context>
@@ -1125,19 +1125,19 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
     <name>Legend</name>
     <message>
         <source>This layer is invalid. This might be due to a network issue, a missing file or a misconfiguration of the project.</source>
-        <translation type="unfinished"/>
+        <translation>该图层无效。可能是网络问题、文件缺失或工程配置错误。</translation>
     </message>
     <message>
         <source>This layer is configured as &quot;Read-Only&quot; which disables adding, deleting and editing features.</source>
-        <translation type="unfinished"/>
+        <translation>该图层被配置为“只读”，将禁用添加、删除和编辑要素。</translation>
     </message>
     <message>
         <source>This layer is configured as &quot;Lock Geometries&quot; which disables adding and deleting features, as well as modifying the geometries of existing features.</source>
-        <translation type="unfinished"/>
+        <translation>该图层被配置为“锁定几何图形”，将禁用添加和删除要素，也无法修改现有要素的几何图形。</translation>
     </message>
     <message>
         <source>Track on layer %1 stopped</source>
-        <translation type="unfinished"/>
+        <translation>图层 %1 上的跟踪已停止</translation>
     </message>
 </context>
 <context>
@@ -1611,46 +1611,46 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
     </message>
     <message>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>名称</translation>
     </message>
 </context>
 <context>
     <name>PositioningInformationModel</name>
     <message>
         <source>Altitude</source>
-        <translation type="unfinished"/>
+        <translation>高程</translation>
     </message>
     <message>
         <source>Speed</source>
-        <translation type="unfinished"/>
+        <translation>速度</translation>
     </message>
     <message>
         <source>H. Accuracy</source>
-        <translation type="unfinished"/>
+        <translation>水平精度</translation>
     </message>
     <message>
         <source>V. Accuracy</source>
-        <translation type="unfinished"/>
+        <translation>垂直精度</translation>
     </message>
     <message>
         <source>Lon</source>
-        <translation type="unfinished"/>
+        <translation>经度</translation>
     </message>
     <message>
         <source>X</source>
-        <translation type="unfinished"/>
+        <translation>X</translation>
     </message>
     <message>
         <source>Lat</source>
-        <translation type="unfinished"/>
+        <translation>纬度</translation>
     </message>
     <message>
         <source>Y</source>
-        <translation type="unfinished"/>
+        <translation>Y</translation>
     </message>
     <message>
         <source>N/A</source>
-        <translation type="unfinished"/>
+        <translation>N/A</translation>
     </message>
 </context>
 <context>
@@ -1720,11 +1720,11 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
     <name>PositioningNtripSettings</name>
     <message>
         <source>Username</source>
-        <translation type="unfinished"/>
+        <translation>用户名</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation type="unfinished"/>
+        <translation>密码</translation>
     </message>
 </context>
 <context>
@@ -1749,18 +1749,18 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
     <name>ProcessingAlgorithmsList</name>
     <message>
         <source>Favorites</source>
-        <translation type="unfinished"/>
+        <translation>收藏</translation>
     </message>
 </context>
 <context>
     <name>QFieldCamera</name>
     <message>
         <source>Altitude</source>
-        <translation type="unfinished"/>
+        <translation>高程</translation>
     </message>
     <message>
         <source>Speed</source>
-        <translation type="unfinished"/>
+        <translation>速度</translation>
     </message>
 </context>
 <context>
@@ -1816,13 +1816,15 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
     <name>QFieldCloudDangerZone</name>
     <message>
         <source>Reset project</source>
-        <translation type="unfinished"/>
+        <translation>重置工程</translation>
     </message>
     <message>
         <source>The local copy of this cloud project has been corrupted. Resetting the project will re-download the cloud version and will remove any local changes, make sure those were copied first if needed.
 
 While you can still view and use the project, it is strongly recommended to reset to avoid any accidental data loss as none of the changes made will be pushed back to the cloud.</source>
-        <translation type="unfinished"/>
+        <translation>该云工程的本地副本已损坏。重置工程会重新下载云端版本并删除所有本地更改，如有需要请先备份这些更改。
+
+你仍可查看和使用该工程，但强烈建议重置，以避免意外丢失数据，因为所有更改都不会推送回云端。</translation>
     </message>
 </context>
 <context>
@@ -1837,7 +1839,7 @@ While you can still view and use the project, it is strongly recommended to rese
     </message>
     <message>
         <source>Unknown</source>
-        <translation type="unfinished"/>
+        <translation>未知</translation>
     </message>
 </context>
 <context>
@@ -1906,7 +1908,7 @@ While you can still view and use the project, it is strongly recommended to rese
     </message>
     <message>
         <source>QFieldCloud</source>
-        <translation type="unfinished"/>
+        <translation>QFieldCloud</translation>
     </message>
 </context>
 <context>
@@ -2111,99 +2113,100 @@ While you can still view and use the project, it is strongly recommended to rese
     <name>QFieldCloudProject</name>
     <message>
         <source>Packaging job finished unsuccessfully for `%1`. %2</source>
-        <translation type="unfinished"/>
+        <translation>`%1` 的打包任务未成功完成。%2</translation>
     </message>
     <message>
         <source>Failed to refresh the latest info for `%1`: %2</source>
-        <translation type="unfinished"/>
+        <translation>刷新 `%1` 的最新信息失败：%2</translation>
     </message>
     <message>
         <source>Failed to get latest package data.</source>
-        <translation type="unfinished"/>
+        <translation>获取最新打包数据失败。</translation>
     </message>
     <message>
         <source>Latest package data response error.</source>
-        <translation type="unfinished"/>
+        <translation>最新打包数据响应错误。</translation>
     </message>
     <message>
         <source>Latest package data structure error.</source>
-        <translation type="unfinished"/>
+        <translation>最新打包数据结构错误。</translation>
     </message>
     <message>
         <source>Project %1: Packaged layer `%2` is not valid. Error code %3, error message: %4</source>
-        <translation type="unfinished"/>
+        <translation>工程 %1：打包图层 `%2` 无效。错误码 %3，错误信息：%4</translation>
     </message>
     <message>
         <source>Failed to open temporary file for `%1`, reason:
 %2</source>
-        <translation type="unfinished"/>
+        <translation>无法打开 `%1` 的临时文件，原因：
+%2</translation>
     </message>
     <message>
         <source>File system error. Failed to write file to temporary location `%1`.</source>
-        <translation type="unfinished"/>
+        <translation>文件系统错误，无法写入临时位置 `%1`。</translation>
     </message>
     <message>
         <source>File system error. Failed to open file for writing on temporary `%1`.</source>
-        <translation type="unfinished"/>
+        <translation>文件系统错误，无法打开临时位置 `%1` 进行写入。</translation>
     </message>
     <message>
         <source>Network error. Failed to download file `%1`.</source>
-        <translation type="unfinished"/>
+        <translation>网络错误，下载文件 `%1` 失败。</translation>
     </message>
     <message>
         <source>Failed to copy some of the downloaded files on your device. Check your device storage.</source>
-        <translation type="unfinished"/>
+        <translation>部分已下载文件无法复制到你的设备，请检查设备存储空间。</translation>
     </message>
     <message>
         <source>Project `%1`, file `%2`: %3</source>
-        <translation type="unfinished"/>
+        <translation>工程 `%1`，文件 `%2`：%3</translation>
     </message>
     <message>
         <source>System message: </source>
-        <translation type="unfinished"/>
+        <translation>系统消息：</translation>
     </message>
     <message>
         <source> (see more in the QField error log)…</source>
-        <translation type="unfinished"/>
+        <translation>（更多信息见 QField 错误日志）…</translation>
     </message>
     <message>
         <source>Job creation finished, but the server response is missing required fields: id(string)</source>
-        <translation type="unfinished"/>
+        <translation>任务已创建，但服务器响应缺少必需字段：id(string)</translation>
     </message>
     <message>
         <source>Getting job status, but no `%2` job triggered yet.</source>
-        <translation type="unfinished"/>
+        <translation>正在获取任务状态，但尚未触发 `%2` 任务。</translation>
     </message>
     <message>
         <source>job(%1) status response does not contain all the expected keys: status(string)</source>
-        <translation type="unfinished"/>
+        <translation>任务(%1) 的状态响应缺少预期的键：status(string)</translation>
     </message>
     <message>
         <source>Job(%1) finished with a failed status.</source>
-        <translation type="unfinished"/>
+        <translation>任务(%1) 以失败状态结束。</translation>
     </message>
     <message>
         <source>project(%1) trigger response refresh not contain all the expected keys: name(string), owner(string), description(string), user_role(string), is_public(bool), can_repackage(bool), needs_repackaging(bool)</source>
-        <translation type="unfinished"/>
+        <translation>工程(%1) 的刷新触发响应缺少预期的键：name(string)、owner(string)、description(string)、user_role(string)、is_public(bool)、can_repackage(bool)、needs_repackaging(bool)</translation>
     </message>
     <message>
         <source>aborted</source>
-        <translation type="unfinished"/>
+        <translation>已中止</translation>
     </message>
 </context>
 <context>
     <name>QFieldCloudProjectDetails</name>
     <message>
         <source>Synchronize</source>
-        <translation type="unfinished"/>
+        <translation>同步</translation>
     </message>
     <message>
         <source>Push changes</source>
-        <translation type="unfinished"/>
+        <translation>推送更改</translation>
     </message>
     <message>
         <source>Downloading project %1</source>
-        <translation type="unfinished"/>
+        <translation>正在下载工程 %1</translation>
     </message>
 </context>
 <context>
@@ -2441,23 +2444,23 @@ While you can still view and use the project, it is strongly recommended to rese
     </message>
     <message>
         <source>Sign out</source>
-        <translation type="unfinished"/>
+        <translation>退出登录</translation>
     </message>
     <message>
         <source>Sign in</source>
-        <translation type="unfinished"/>
+        <translation>登录</translation>
     </message>
     <message>
         <source>Synchronize</source>
-        <translation type="unfinished"/>
+        <translation>同步</translation>
     </message>
     <message>
         <source>Push changes</source>
-        <translation type="unfinished"/>
+        <translation>推送更改</translation>
     </message>
     <message>
         <source>Projects</source>
-        <translation type="unfinished"/>
+        <translation>工程</translation>
     </message>
 </context>
 <context>
@@ -2475,11 +2478,11 @@ While you can still view and use the project, it is strongly recommended to rese
     <name>QFieldCloudUtils</name>
     <message>
         <source>A server error has occured, please try again.</source>
-        <translation type="unfinished"/>
+        <translation>服务器出错，请重试。</translation>
     </message>
     <message>
         <source>A network error has occured, please try again.</source>
-        <translation type="unfinished"/>
+        <translation>网络出错，请重试。</translation>
     </message>
 </context>
 <context>
@@ -2558,7 +2561,7 @@ While you can still view and use the project, it is strongly recommended to rese
     </message>
     <message>
         <source>Password</source>
-        <translation type="unfinished"/>
+        <translation>密码</translation>
     </message>
 </context>
 <context>
@@ -2874,11 +2877,11 @@ Cancel to make a minimal device scan instead.</source>
     </message>
     <message>
         <source>Username</source>
-        <translation type="unfinished"/>
+        <translation>用户名</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation type="unfinished"/>
+        <translation>密码</translation>
     </message>
 </context>
 <context>
@@ -2917,7 +2920,7 @@ Cancel to make a minimal device scan instead.</source>
     </message>
     <message>
         <source>Multiple Projects</source>
-        <translation>工程集</translation>
+        <translation>多个工程</translation>
     </message>
     <message>
         <source>Invalid delta file</source>
@@ -3737,11 +3740,11 @@ Cancel to make a minimal device scan instead.</source>
     </message>
     <message>
         <source>Skip altitude correction</source>
-        <translation>跳过海拔校正</translation>
+        <translation>跳过高程改正</translation>
     </message>
     <message>
         <source>Use the altitude as reported by the positioning device. Skip any altitude correction that may be implied by the coordinate system transformation.</source>
-        <translation>使用定位设备报告的海拔，跳过坐标系转换可能隐含的任何海拔校正。</translation>
+        <translation>直接使用定位设备报告的高程，跳过坐标系统转换可能引入的高程改正。</translation>
     </message>
     <message>
         <source>Vertical grid shift in use:</source>
@@ -4054,19 +4057,19 @@ Cancel to make a minimal device scan instead.</source>
     <name>QfCalendarPanel</name>
     <message>
         <source>Hours</source>
-        <translation type="unfinished"/>
+        <translation>时</translation>
     </message>
     <message>
         <source>Minutes</source>
-        <translation type="unfinished"/>
+        <translation>分</translation>
     </message>
     <message>
         <source>Seconds</source>
-        <translation type="unfinished"/>
+        <translation>秒</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation type="unfinished"/>
+        <translation>确定</translation>
     </message>
     <message>
         <source>January</source>
@@ -4257,7 +4260,7 @@ Cancel to make a minimal device scan instead.</source>
     <name>QfCloseButton</name>
     <message>
         <source>close</source>
-        <translation type="unfinished"/>
+        <translation>关闭</translation>
     </message>
 </context>
 <context>
@@ -4979,19 +4982,19 @@ While you can still view and use the project, it is strongly recommended to rese
     <name>QfCloudScreen</name>
     <message>
         <source>QFieldCloud Projects</source>
-        <translation type="unfinished"/>
+        <translation>QFieldCloud 工程</translation>
     </message>
     <message>
         <source>Disconnected from the cloud.</source>
-        <translation type="unfinished"/>
+        <translation>已断开与云的连接。</translation>
     </message>
     <message>
         <source>Connecting to the cloud.</source>
-        <translation type="unfinished"/>
+        <translation>正在连接云。</translation>
     </message>
     <message>
         <source>Greetings &lt;strong&gt;%1&lt;/strong&gt;.</source>
-        <translation type="unfinished"/>
+        <translation>你好 &lt;strong&gt;%1&lt;/strong&gt;。</translation>
     </message>
     <message>
         <source>Projects</source>
@@ -5757,7 +5760,7 @@ While you can still view and use the project, it is strongly recommended to rese
     </message>
     <message>
         <source>Cancel editing</source>
-        <translation type="unfinished"/>
+        <translation>取消编辑</translation>
     </message>
     <message>
         <source>You are about to dismiss the new feature, proceed?</source>
@@ -5871,7 +5874,7 @@ While you can still view and use the project, it is strongly recommended to rese
     </message>
     <message>
         <source>Stop tracking this feature to edit geometry</source>
-        <translation>停止跟踪此要素并编辑其形状</translation>
+        <translation>停止跟踪此要素并编辑其几何图形</translation>
     </message>
     <message>
         <source>Successfully duplicated feature</source>
@@ -6934,7 +6937,7 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
     </message>
     <message>
         <source>Atlas feature(s) successfully printed and placed in your project folder</source>
-        <translation type="unfinished"/>
+        <translation>图集要素已成功打印并放入你的工程文件夹</translation>
     </message>
 </context>
 <context>
@@ -7820,7 +7823,7 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
     </message>
     <message>
         <source>Atlas feature(s) successfully printed and placed in your project folder</source>
-        <translation type="unfinished"/>
+        <translation>图集要素已成功打印并放入你的工程文件夹</translation>
     </message>
     <message>
         <source>Cannot add child feature: insure the parent feature meets all constraints and can be saved</source>
@@ -7898,191 +7901,191 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
     <name>QfSettings</name>
     <message>
         <source>Show scale bar</source>
-        <translation type="unfinished"/>
+        <translation>显示比例尺</translation>
     </message>
     <message>
         <source>Show bookmarks</source>
-        <translation type="unfinished"/>
+        <translation>显示书签</translation>
     </message>
     <message>
         <source>When switched on, user&apos;s saved and currently opened project bookmarks will be displayed on the map.</source>
-        <translation type="unfinished"/>
+        <translation>开启后，用户保存的和当前打开的工程书签会显示在地图上。</translation>
     </message>
     <message>
         <source>Show digitizing information</source>
-        <translation type="unfinished"/>
+        <translation>显示数字化信息</translation>
     </message>
     <message>
         <source>When switched on, coordinate information, such as latitude and longitude, is overlayed onto the map while digitizing new features or using the measure tool.</source>
-        <translation type="unfinished"/>
+        <translation>开启后，在数字化新要素或使用测量工具时，经纬度等坐标信息会叠加显示在地图上。</translation>
     </message>
     <message>
         <source>Consider mouse as a touchscreen device</source>
-        <translation type="unfinished"/>
+        <translation>将鼠标视为触摸屏设备</translation>
     </message>
     <message>
         <source>Fixed scale navigation</source>
-        <translation type="unfinished"/>
+        <translation>固定比例导航</translation>
     </message>
     <message>
         <source>When fixed scale navigation is active, focusing on a search result will pan to the feature. With fixed scale navigation disabled it will pan and zoom to the feature.</source>
-        <translation type="unfinished"/>
+        <translation>启用固定比例导航时，聚焦搜索结果只会平移到该要素；关闭时会平移并缩放到该要素。</translation>
     </message>
     <message>
         <source>Use native camera</source>
-        <translation type="unfinished"/>
+        <translation>使用系统相机</translation>
     </message>
     <message>
         <source>Send anonymized metrics</source>
-        <translation type="unfinished"/>
+        <translation>发送匿名统计信息</translation>
     </message>
     <message>
         <source>General</source>
-        <translation type="unfinished"/>
+        <translation>常规</translation>
     </message>
     <message>
         <source>Positioning</source>
-        <translation type="unfinished"/>
+        <translation>定位</translation>
     </message>
     <message>
         <source>Variables</source>
-        <translation type="unfinished"/>
+        <translation>变量</translation>
     </message>
     <message>
         <source>Customize search bar</source>
-        <translation type="unfinished"/>
+        <translation>自定义搜索栏</translation>
     </message>
     <message>
         <source>Dim screen when idling</source>
-        <translation type="unfinished"/>
+        <translation>空闲时调暗屏幕</translation>
     </message>
     <message>
         <source>Time of inactivity in seconds before the screen brightness get be dimmed to preserve battery.</source>
-        <translation type="unfinished"/>
+        <translation>为省电而调暗屏幕亮度前的无操作时间（秒）。</translation>
     </message>
     <message>
         <source>system</source>
-        <translation type="unfinished"/>
+        <translation>系统</translation>
     </message>
     <message>
         <source>Found a missing or incomplete language? %1Join the translator community.%2</source>
-        <translation type="unfinished"/>
+        <translation>发现翻译缺失或不完整的语言？%1加入翻译社区。%2</translation>
     </message>
     <message>
         <source>Username</source>
-        <translation type="unfinished"/>
+        <translation>用户名</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation type="unfinished"/>
+        <translation>密码</translation>
     </message>
     <message>
         <source>Positioning device in use:</source>
-        <translation type="unfinished"/>
+        <translation>正在使用的定位设备：</translation>
     </message>
     <message>
         <source>Add</source>
-        <translation type="unfinished"/>
+        <translation>添加</translation>
     </message>
     <message>
         <source>Edit</source>
-        <translation type="unfinished"/>
+        <translation>编辑</translation>
     </message>
     <message>
         <source>Remove</source>
-        <translation type="unfinished"/>
+        <translation>移除</translation>
     </message>
     <message>
         <source>Connected to %1</source>
-        <translation type="unfinished"/>
+        <translation>已连接到 %1</translation>
     </message>
     <message>
         <source>Connect to %1</source>
-        <translation type="unfinished"/>
+        <translation>连接到 %1</translation>
     </message>
     <message>
         <source>Connecting to %1</source>
-        <translation type="unfinished"/>
+        <translation>正在连接到 %1</translation>
     </message>
     <message>
         <source>Show position information</source>
-        <translation type="unfinished"/>
+        <translation>显示定位信息</translation>
     </message>
     <message>
         <source>Measure (M) value attached to vertices:</source>
-        <translation type="unfinished"/>
+        <translation>附加到顶点的测量(M)值：</translation>
     </message>
     <message>
         <source>Ground speed</source>
-        <translation type="unfinished"/>
+        <translation>地速</translation>
     </message>
     <message>
         <source>Bearing</source>
-        <translation type="unfinished"/>
+        <translation>方位角</translation>
     </message>
     <message>
         <source>Horizontal accuracy</source>
-        <translation type="unfinished"/>
+        <translation>水平精度</translation>
     </message>
     <message>
         <source>Vertical accuracy</source>
-        <translation type="unfinished"/>
+        <translation>垂直精度</translation>
     </message>
     <message>
         <source>PDOP</source>
-        <translation type="unfinished"/>
+        <translation>PDOP</translation>
     </message>
     <message>
         <source>HDOP</source>
-        <translation type="unfinished"/>
+        <translation>HDOP</translation>
     </message>
     <message>
         <source>VDOP</source>
-        <translation type="unfinished"/>
+        <translation>VDOP</translation>
     </message>
     <message>
         <source>When digitizing features with the coordinate cursor locked to the current position, the measurement type selected above will be added to the geometry provided it has an M dimension.</source>
-        <translation type="unfinished"/>
+        <translation>当坐标游标锁定到当前位置进行数字化时，只要几何图形具有 M 维度，就会把上面选择的测量类型写入该几何图形。</translation>
     </message>
     <message>
         <source>Activate accuracy indicator</source>
-        <translation type="unfinished"/>
+        <translation>启用精度指示器</translation>
     </message>
     <message>
         <source>Enable averaged positioning requirement</source>
-        <translation type="unfinished"/>
+        <translation>启用平均定位要求</translation>
     </message>
     <message>
         <source>Automatically end collection when minimum number is met</source>
-        <translation type="unfinished"/>
+        <translation>达到最少采集次数后自动结束采集</translation>
     </message>
     <message>
         <source>When enabled, digitizing vertices with a cursor locked to position will only accepted an averaged position from a minimum number of collected positions. Digitizing using averaged positions is done by pressing and holding the add vertex button, which will collect positions until the press is released. Accuracy requirement settings are respected when enabled.</source>
-        <translation type="unfinished"/>
+        <translation>启用后，使用锁定到当前位置的游标数字化顶点时，只接受由最少采集次数计算出的平均位置。使用平均位置数字化时，长按“添加顶点”按钮，按住期间会持续采集位置，松开即结束。启用时会遵循精度要求设置。</translation>
     </message>
     <message>
         <source>Antenna height compensation</source>
-        <translation type="unfinished"/>
+        <translation>天线高校正</translation>
     </message>
     <message>
         <source>Skip altitude correction</source>
-        <translation type="unfinished"/>
+        <translation>跳过高程改正</translation>
     </message>
     <message>
         <source>Use the altitude as reported by the positioning device. Skip any altitude correction that may be implied by the coordinate system transformation.</source>
-        <translation type="unfinished"/>
+        <translation>直接使用定位设备报告的高程，跳过坐标系统转换可能引入的高程改正。</translation>
     </message>
     <message>
         <source>Vertical grid shift in use:</source>
-        <translation type="unfinished"/>
+        <translation>正在使用的高程格网改正：</translation>
     </message>
     <message>
         <source>None</source>
-        <translation type="unfinished"/>
+        <translation>无</translation>
     </message>
     <message>
         <source>Vertical grid shift is used to increase the altitude accuracy.</source>
-        <translation type="unfinished"/>
+        <translation>高程格网改正用于提高高程精度。</translation>
     </message>
 </context>
 <context>
@@ -9341,7 +9344,7 @@ to show actions</source>
     <name>Range</name>
     <message>
         <source>NULL</source>
-        <translation type="unfinished"/>
+        <translation>NULL</translation>
     </message>
 </context>
 <context>
@@ -9371,23 +9374,23 @@ to show actions</source>
     <name>ReferencingFeatureListModelBase</name>
     <message>
         <source>Invalid referencing layer</source>
-        <translation type="unfinished"/>
+        <translation>关联图层无效</translation>
     </message>
     <message>
         <source>Cannot start editing</source>
-        <translation type="unfinished"/>
+        <translation>无法开始编辑</translation>
     </message>
     <message>
         <source>Cannot delete feature</source>
-        <translation type="unfinished"/>
+        <translation>无法删除要素</translation>
     </message>
     <message>
         <source>Cannot rollback layer changes in layer %1</source>
-        <translation type="unfinished"/>
+        <translation>无法回滚图层 %1 中的更改</translation>
     </message>
     <message>
         <source>Cannot commit layer changes in layer %1.</source>
-        <translation type="unfinished"/>
+        <translation>无法提交图层 %1 中的更改。</translation>
     </message>
 </context>
 <context>
@@ -9402,57 +9405,57 @@ to show actions</source>
     </message>
     <message>
         <source>NULL</source>
-        <translation type="unfinished"/>
+        <translation>NULL</translation>
     </message>
 </context>
 <context>
     <name>RelationEditorBase</name>
     <message>
         <source>Adding child feature in layer %1</source>
-        <translation type="unfinished"/>
+        <translation>正在向图层 %1 添加子要素</translation>
     </message>
     <message>
         <source>Delete Feature</source>
-        <translation type="unfinished"/>
+        <translation>删除要素</translation>
     </message>
     <message>
         <source>Should the feature &lt;b&gt;%1 (%2)&lt;/b&gt; of layer &lt;b&gt;%3&lt;/b&gt; be unlinked?&lt;br&gt;&lt;i&gt;(The connection will be deleted on layer &lt;b&gt;%4&lt;/b&gt;)&lt;/i&gt;</source>
-        <translation type="unfinished"/>
+        <translation>是否解除图层 &lt;b&gt;%3&lt;/b&gt; 中要素 &lt;b&gt;%1 (%2)&lt;/b&gt; 的关联？&lt;br&gt;&lt;i&gt;（该关联会在图层 &lt;b&gt;%4&lt;/b&gt; 上删除）&lt;/i&gt;</translation>
     </message>
     <message>
         <source>Should the feature &lt;b&gt;%1 (%2)&lt;/b&gt; on layer &lt;b&gt;%3&lt;/b&gt; be deleted?</source>
-        <translation type="unfinished"/>
+        <translation>是否删除图层 &lt;b&gt;%3&lt;/b&gt; 上的要素 &lt;b&gt;%1 (%2)&lt;/b&gt;？</translation>
     </message>
     <message>
         <source>Failed to delete referencing feature</source>
-        <translation type="unfinished"/>
+        <translation>删除关联要素失败</translation>
     </message>
     <message>
         <source>Print Atlas Feature to PDF</source>
-        <translation type="unfinished"/>
+        <translation>将图集要素打印为 PDF</translation>
     </message>
     <message>
         <source>Print Atlas Feature(s)</source>
-        <translation type="unfinished"/>
+        <translation>打印图集要素</translation>
     </message>
     <message>
         <source>Select template below</source>
-        <translation type="unfinished"/>
+        <translation>在下方选择模板</translation>
     </message>
     <message>
         <source>Printing...</source>
-        <translation type="unfinished"/>
+        <translation>正在打印…</translation>
     </message>
     <message>
         <source>Atlas feature(s) successfully printed and placed in your project folder</source>
-        <translation type="unfinished"/>
+        <translation>图集要素已成功打印并放入你的工程文件夹</translation>
     </message>
 </context>
 <context>
     <name>Reshape</name>
     <message>
         <source>The geometry could not be reshaped</source>
-        <translation type="unfinished"/>
+        <translation>无法重塑该几何图形</translation>
     </message>
 </context>
 <context>
@@ -9473,7 +9476,7 @@ to show actions</source>
     <name>SensorInformationView</name>
     <message>
         <source>N/A</source>
-        <translation type="unfinished"/>
+        <translation>N/A</translation>
     </message>
 </context>
 <context>
@@ -9522,7 +9525,7 @@ to show actions</source>
     <name>SplitFeature</name>
     <message>
         <source>Feature could not be split</source>
-        <translation type="unfinished"/>
+        <translation>无法分割要素</translation>
     </message>
 </context>
 <context>
@@ -9616,77 +9619,77 @@ to show actions</source>
     </message>
     <message>
         <source>NULL</source>
-        <translation type="unfinished"/>
+        <translation>NULL</translation>
     </message>
 </context>
 <context>
     <name>TrackerFeatureForm</name>
     <message>
         <source>Track on layer %1 started</source>
-        <translation type="unfinished"/>
+        <translation>图层 %1 上的跟踪已开始</translation>
     </message>
 </context>
 <context>
     <name>TrackerSettings</name>
     <message>
         <source>Minimum time [sec]</source>
-        <translation type="unfinished"/>
+        <translation>最短时间 [秒]</translation>
     </message>
     <message>
         <source>Minimum distance [%1]</source>
-        <translation type="unfinished"/>
+        <translation>最短距离 [%1]</translation>
     </message>
     <message>
         <source>Measure (M) value attached to vertices:</source>
-        <translation type="unfinished"/>
+        <translation>附加到顶点的测量(M)值：</translation>
     </message>
     <message>
         <source>Elapsed time (seconds since start of tracking)</source>
-        <translation type="unfinished"/>
+        <translation>已用时间（自开始跟踪起的秒数）</translation>
     </message>
     <message>
         <source>Timestamp (milliseconds since epoch)</source>
-        <translation type="unfinished"/>
+        <translation>时间戳（自纪元起的毫秒数）</translation>
     </message>
     <message>
         <source>Ground speed</source>
-        <translation type="unfinished"/>
+        <translation>地速</translation>
     </message>
     <message>
         <source>Bearing</source>
-        <translation type="unfinished"/>
+        <translation>方位角</translation>
     </message>
     <message>
         <source>Horizontal accuracy</source>
-        <translation type="unfinished"/>
+        <translation>水平精度</translation>
     </message>
     <message>
         <source>Vertical accuracy</source>
-        <translation type="unfinished"/>
+        <translation>垂直精度</translation>
     </message>
     <message>
         <source>PDOP</source>
-        <translation type="unfinished"/>
+        <translation>PDOP</translation>
     </message>
     <message>
         <source>HDOP</source>
-        <translation type="unfinished"/>
+        <translation>HDOP</translation>
     </message>
     <message>
         <source>VDOP</source>
-        <translation type="unfinished"/>
+        <translation>VDOP</translation>
     </message>
     <message>
         <source>To active the measurement functionality, make sure the vector layer&apos;s geometry type used for the tracking session has an M dimension.</source>
-        <translation type="unfinished"/>
+        <translation>要启用测量功能，请确保用于该跟踪会话的矢量图层几何类型具有 M 维度。</translation>
     </message>
     <message>
         <source>Start tracking</source>
-        <translation type="unfinished"/>
+        <translation>开始跟踪</translation>
     </message>
     <message>
         <source>Track on layer %1 started</source>
-        <translation type="unfinished"/>
+        <translation>图层 %1 上的跟踪已开始</translation>
     </message>
 </context>
 <context>
@@ -9784,75 +9787,75 @@ to show actions</source>
     <name>TrackingSession</name>
     <message>
         <source>Track on layer %1 started</source>
-        <translation type="unfinished"/>
+        <translation>图层 %1 上的跟踪已开始</translation>
     </message>
     <message>
         <source>Tracker Settings</source>
-        <translation type="unfinished"/>
+        <translation>跟踪设置</translation>
     </message>
     <message>
         <source>Activate time constraint</source>
-        <translation type="unfinished"/>
+        <translation>启用时间约束</translation>
     </message>
     <message>
         <source>Minimum time [sec]</source>
-        <translation type="unfinished"/>
+        <translation>最短时间 [秒]</translation>
     </message>
     <message>
         <source>Activate distance constraint</source>
-        <translation type="unfinished"/>
+        <translation>启用距离约束</translation>
     </message>
     <message>
         <source>Minimum distance [%1]</source>
-        <translation type="unfinished"/>
+        <translation>最短距离 [%1]</translation>
     </message>
     <message>
         <source>Measure (M) value attached to vertices:</source>
-        <translation type="unfinished"/>
+        <translation>附加到顶点的测量(M)值：</translation>
     </message>
     <message>
         <source>Elapsed time (seconds since start of tracking)</source>
-        <translation type="unfinished"/>
+        <translation>已用时间（自开始跟踪起的秒数）</translation>
     </message>
     <message>
         <source>Timestamp (milliseconds since epoch)</source>
-        <translation type="unfinished"/>
+        <translation>时间戳（自纪元起的毫秒数）</translation>
     </message>
     <message>
         <source>Ground speed</source>
-        <translation type="unfinished"/>
+        <translation>地速</translation>
     </message>
     <message>
         <source>Bearing</source>
-        <translation type="unfinished"/>
+        <translation>方位角</translation>
     </message>
     <message>
         <source>Horizontal accuracy</source>
-        <translation type="unfinished"/>
+        <translation>水平精度</translation>
     </message>
     <message>
         <source>Vertical accuracy</source>
-        <translation type="unfinished"/>
+        <translation>垂直精度</translation>
     </message>
     <message>
         <source>PDOP</source>
-        <translation type="unfinished"/>
+        <translation>PDOP</translation>
     </message>
     <message>
         <source>HDOP</source>
-        <translation type="unfinished"/>
+        <translation>HDOP</translation>
     </message>
     <message>
         <source>VDOP</source>
-        <translation type="unfinished"/>
+        <translation>VDOP</translation>
     </message>
     <message>
         <source>To active the measurement functionality, make sure the vector layer&apos;s geometry type used for the tracking session has an M dimension.</source>
-        <translation type="unfinished"/>
+        <translation>要启用测量功能，请确保用于该跟踪会话的矢量图层几何类型具有 M 维度。</translation>
     </message>
     <message>
         <source>Start tracking</source>
-        <translation type="unfinished"/>
+        <translation>开始跟踪</translation>
     </message>
 </context>
 <context>
@@ -9909,7 +9912,7 @@ to show actions</source>
     <name>ValueMap</name>
     <message>
         <source>Search…</source>
-        <translation type="unfinished"/>
+        <translation>搜索…</translation>
     </message>
 </context>
 <context>
@@ -9931,7 +9934,7 @@ to show actions</source>
     <name>VertexEditor</name>
     <message>
         <source>Failed to save feature!</source>
-        <translation type="unfinished"/>
+        <translation>保存要素失败！</translation>
     </message>
 </context>
 <context>
@@ -10020,11 +10023,11 @@ to show actions</source>
     <name>boolean</name>
     <message>
         <source>True</source>
-        <translation type="unfinished"/>
+        <translation>是</translation>
     </message>
     <message>
         <source>False</source>
-        <translation type="unfinished"/>
+        <translation>否</translation>
     </message>
 </context>
 <context>
@@ -10477,27 +10480,27 @@ to show actions</source>
     </message>
     <message>
         <source>Duplicate Feature</source>
-        <translation type="unfinished"/>
+        <translation>复制要素</translation>
     </message>
     <message>
         <source>Successfully duplicated feature</source>
-        <translation type="unfinished"/>
+        <translation>已成功复制要素</translation>
     </message>
     <message>
         <source>Project Folder</source>
-        <translation type="unfinished"/>
+        <translation>工程文件夹</translation>
     </message>
     <message>
         <source>Positioning</source>
-        <translation type="unfinished"/>
+        <translation>定位</translation>
     </message>
     <message>
         <source>Variables</source>
-        <translation type="unfinished"/>
+        <translation>变量</translation>
     </message>
     <message>
         <source>QFieldCloud</source>
-        <translation type="unfinished"/>
+        <translation>QFieldCloud</translation>
     </message>
 </context>
 <context>
