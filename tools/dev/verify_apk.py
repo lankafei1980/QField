@@ -19,17 +19,20 @@ import re
 import sys
 import zipfile
 
+# Strings that survive compilation as plain data.
 MARKERS = {
     "app label (zh)": "RTK 外业助手",
     "app label (en)": "RTK Field",
     "package name": "cn.zpyzs.rtkapp",
-    "qianxun preset": "千寻位置",
-    "service provider label": "服务商",
-    "ntrip auth error": "NTRIP 认证失败",
-    "ntrip reconnect": "reconnecting in",
-    "antenna height": "天线高校正",
-    "tracking settings": "跟踪设置",
+    "chinese translation resource": "qfield_zh.qm",
+    "english translation resource": "qfield_en.qm",
+    "i18n resource prefix": ":/i18n",
+    "ntrip reconnect log": "NTRIP client: reconnecting in",
 }
+
+# Translated strings live inside the zlib compressed .qm resources, so they
+# cannot be grepped; their presence is implied by the .qm resource above.
+COMPRESSED_HINTS = ["千寻位置", "服务商", "NTRIP 认证失败", "天线高校正", "跟踪设置"]
 
 
 def contains(haystack, needle):
@@ -46,11 +49,12 @@ def main(path):
         print(f"abis      : {', '.join(abis) if abis else 'none'}")
 
         payload = apk.read("resources.arsc") if "resources.arsc" in names else b""
-        payload += b"".join(apk.read(lib) for l in libs)
+        payload += b"".join(apk.read(name) for name in libs)
         for extra in ("AndroidManifest.xml",):
             if extra in names:
                 payload += apk.read(extra)
 
+        print("\ntranslations (compressed inside qfield_zh.qm, greppable only in the .ts): " + ", ".join(COMPRESSED_HINTS))
         print("\nmarkers:")
         missing = 0
         for label, needle in MARKERS.items():
