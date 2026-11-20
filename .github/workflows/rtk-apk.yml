@@ -74,7 +74,9 @@ jobs:
       - name: 💾 Restore vcpkg binary artifacts
         uses: actions/cache/restore@v4
         with:
-          path: ~/.cache/vcpkg/archives
+          path: |
+            ~/.cache/vcpkg/archives
+            /home/runner/vcpkg-downloads
           key: vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-${{ github.run_id }}
           restore-keys: |
             vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-
@@ -93,6 +95,10 @@ jobs:
           # that dies on a transient download still hands its work to the next
           # run instead of losing three hours of compilation.
           VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite;files,/home/runner/.cache/vcpkg/archives,readwrite"
+          # Keep the downloaded sources / patches across runs: github.com
+          # occasionally answers 503 on the commit patch URLs vcpkg uses, and a
+          # cached distfile can never fail that way
+          VCPKG_DOWNLOADS: /home/runner/vcpkg-downloads
         run: |
           # vcpkg downloads port patches straight from github.com, which
           # occasionally answers 503; retry the configure step instead of
@@ -134,7 +140,9 @@ jobs:
         if: always()
         uses: actions/cache/save@v4
         with:
-          path: ~/.cache/vcpkg/archives
+          path: |
+            ~/.cache/vcpkg/archives
+            /home/runner/vcpkg-downloads
           key: vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-${{ github.run_id }}
 
       - name: 📑 Upload configure logs on failure
