@@ -71,26 +71,38 @@ jobs:
             libxkbcommon-x11-dev autoconf-archive libgstreamer-gl1.0-0 \
             libgstreamer-plugins-base1.0-0 libfuse2 libcups2-dev nasm libltdl-dev
 
-      - name: 💾 Cache vcpkg binary artifacts
-        uses: actions/cache@v4
+      - name: 💾 Restore vcpkg binary artifacts
+        uses: actions/cache/restore@v4
         with:
           path: ~/.cache/vcpkg/archives
-          key: vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-${{ hashFiles('vcpkg.json', 'vcpkg/**') }}
+          key: vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-${{ github.run_id }}
           restore-keys: |
             vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-
+
+      - name: 🗝️ Export the GitHub Actions cache variables for vcpkg
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
       - name: 🌱 Configure
         env:
           WORKSPACE: ${{ github.workspace }}
+          # Push every finished port to the Actions cache immediately: a job
+          # that dies on a transient download still hands its work to the next
+          # run instead of losing three hours of compilation.
+          VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite;files,/home/runner/.cache/vcpkg/archives,readwrite"
         run: |
           # vcpkg downloads port patches straight from github.com, which
           # occasionally answers 503; retry the configure step instead of
           # losing a whole build
-          for attempt in 1 2 3; do
+          for attempt in 1 2 3 4 5; do
             echo "::group::configure attempt ${attempt}"
             if cmake -S "${{ github.workspace }}" \
                   -B "${CMAKE_BUILD_DIR}" \
                   -G Ninja \
+                  -D CMAKE_MAKE_PROGRAM="$(command -v ninja)" \
                   -D CMAKE_BUILD_TYPE=Release \
                   -D ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT} \
                   -D ANDROID_NDK_VERSION="${ANDROID_NDK_VERSION}" \
@@ -111,11 +123,19 @@ jobs:
               exit 0
             fi
             echo "::endgroup::"
-            echo "configure attempt ${attempt} failed, retrying in 30 s"
-            sleep 30
+            wait=$((attempt * 60))
+            echo "configure attempt ${attempt} failed, retrying in ${wait} s"
+            sleep ${wait}
           done
-          echo "configure failed after 3 attempts"
+          echo "configure failed after 5 attempts"
           exit 1
+
+      - name: 💾 Save vcpkg binary artifacts
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.cache/vcpkg/archives
+          key: vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-${{ github.run_id }}
 
       - name: 📑 Upload configure logs on failure
         uses: actions/upload-artifact@v7
