@@ -34,11 +34,11 @@ namespace
    */
   bool isLikelyGnssDevice( const QString &name )
   {
-    static const QStringList keywords = { QStringLiteral( "sparkfun" ), QStringLiteral( "rtk" ),  QStringLiteral( "facet" ),
-                                          QStringLiteral( "gnss" ),     QStringLiteral( "gps" ),  QStringLiteral( "u-blox" ),
-                                          QStringLiteral( "ublox" ),    QStringLiteral( "emlid" ), QStringLiteral( "ardusimple" ),
+    static const QStringList keywords = { QStringLiteral( "sparkfun" ), QStringLiteral( "rtk" ), QStringLiteral( "facet" ),
+                                          QStringLiteral( "gnss" ), QStringLiteral( "gps" ), QStringLiteral( "u-blox" ),
+                                          QStringLiteral( "ublox" ), QStringLiteral( "emlid" ), QStringLiteral( "ardusimple" ),
                                           QStringLiteral( "septentrio" ), QStringLiteral( "trimble" ), QStringLiteral( "leica" ),
-                                          QStringLiteral( "sxblue" ),   QStringLiteral( "nmea" ), QStringLiteral( "reach" ) };
+                                          QStringLiteral( "sxblue" ), QStringLiteral( "nmea" ), QStringLiteral( "reach" ) };
     const QString lower = name.toLower();
     for ( const QString &keyword : keywords )
     {

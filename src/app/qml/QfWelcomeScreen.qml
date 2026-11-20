@@ -271,9 +271,10 @@ Page {
                 round: true
 
                 onClicked: {
-                  if (Qt.platform.os === "android" || Qt.platform.os === "ios" || Qt.platform.os === "windows") {
+                  if (Qfield.name === "QField" && (Qt.platform.os === "android" || Qt.platform.os === "ios" || Qt.platform.os === "windows")) {
                     feedbackView.currentIndex = 2;
                   } else {
+                    // White-labelled builds have no store listing to rate
                     feedbackView.Layout.preferredHeight = 0;
                   }
                 }
@@ -330,12 +331,14 @@ Page {
                 icon.source: QfTheme.getThemeVectorIcon('ic_star_white_24dp')
 
                 onClicked: {
-                  if (Qt.platform.os === "windows") {
-                    Qt.openUrlExternally("https://apps.microsoft.com/detail/xp99h3bcx4bw7f");
-                  } else if (Qt.platform.os === "android") {
-                    Qt.openUrlExternally("market://details?id=ch.opengis.qfield");
-                  } else if (Qt.platform.os === "ios") {
-                    Qt.openUrlExternally("itms-apps://itunes.apple.com/app/qfield-for-qgis/id1531726814");
+                  if (Qfield.name === "QField") {
+                    if (Qt.platform.os === "windows") {
+                      Qt.openUrlExternally("https://apps.microsoft.com/detail/xp99h3bcx4bw7f");
+                    } else if (Qt.platform.os === "android") {
+                      Qt.openUrlExternally("market://details?id=ch.opengis.qfield");
+                    } else if (Qt.platform.os === "ios") {
+                      Qt.openUrlExternally("itms-apps://itunes.apple.com/app/qfield-for-qgis/id1531726814");
+                    }
                   }
                   feedbackView.Layout.preferredHeight = 0;
                 }

@@ -34,6 +34,8 @@
 #include <QDateTime>
 #include <QStandardPaths>
 
+#include <algorithm>
+
 QString QfPositioningSource::backgroundFilePath = QStringLiteral( "%1/positioning.background" ).arg( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) );
 
 QfPositioningSource::QfPositioningSource( QObject *parent )
@@ -568,8 +570,8 @@ void QfPositioningSource::scheduleNtripReconnect()
     return;
   }
 
-  int delay = NTRIP_RECONNECT_MIN_DELAY_MS * ( 1 << qMin( mNtripReconnectAttempt, 4 ) );
-  delay = qMin( delay, NTRIP_RECONNECT_MAX_DELAY_MS );
+  int delay = NTRIP_RECONNECT_MIN_DELAY_MS * ( 1 << std::min( mNtripReconnectAttempt, 4 ) );
+  delay = std::min( delay, NTRIP_RECONNECT_MAX_DELAY_MS );
   mNtripReconnectAttempt++;
 
   qInfo() << QStringLiteral( "NTRIP client: reconnecting in %1 ms (attempt %2)" ).arg( delay ).arg( mNtripReconnectAttempt );
