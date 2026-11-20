@@ -171,8 +171,26 @@ int main( int argc, char **argv )
 
   // Read settings, use a dummy app to get access to QSettings
   QCoreApplication *dummyApp = new QCoreApplication( argc, argv );
-  const QSettings settings;
-  const QString customLanguage = settings.value( "/customLanguage", QString() ).toString();
+  QSettings settings;
+
+  QString customLanguage = settings.value( "/customLanguage", QString() ).toString();
+
+  // Some builds target a single market and want the UI translated out of the
+  // box even when the device runs another system language. The build default is
+  // applied once, on the very first start, and the user can always switch back
+  // to "system" from the app settings afterwards.
+  const QString buildDefaultLanguage = QStringLiteral( "@APP_DEFAULT_LANGUAGE@" );
+  if ( customLanguage.isEmpty() && !buildDefaultLanguage.isEmpty()
+       && !settings.contains( "/customLanguageInitialized" ) )
+  {
+    settings.setValue( "/customLanguageInitialized", true );
+    if ( QLocale().language() != QLocale( buildDefaultLanguage ).language() )
+    {
+      customLanguage = buildDefaultLanguage;
+      settings.setValue( "/customLanguage", customLanguage );
+    }
+    settings.sync();
+  }
 
   QfPlatformUtilities *platformUtils = QfPlatformUtilities::instance();
   platformUtils->initSystem();

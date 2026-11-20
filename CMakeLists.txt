@@ -16,6 +16,7 @@ set(APP_VERSION "0" CACHE STRING "Application Version (Example: v1.0.0)")
 set(APP_VERSION_STR "local - dev" CACHE STRING "Application Version Name (Example: 1.0.0 - Homerun)")
 set(APP_DISPLAY_NAME "${APP_NAME}" CACHE STRING "Application display name used by the about screen")
 set(APP_PACKAGE_PREFIX "ch.opengis" CACHE STRING "Package name prefix. E.g. ch.opengis + qfield --> ch.opengis.qfield")
+set(APP_DEFAULT_LANGUAGE "" CACHE STRING "UI language applied on first start when the system language is not translated yet (e.g. zh). Empty keeps following the system language.")
 set(APP_PACKAGE_NAME "qfield" CACHE STRING "Package name suffix. E.g. qfield --> ch.opengis.qfield")
 set(APP_BUNDLED_PLUGINS "" CACHE STRING "Application bundled plugins path")
 

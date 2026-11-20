@@ -21,6 +21,7 @@ env:
   APP_PACKAGE_NAME: rtkapp
   APP_VERSION: v4.3.8
   APP_VERSION_STR: 4.3.8 - 中文版 CN1
+  APP_DEFAULT_LANGUAGE: zh
   APK_VERSION_CODE: 1
 
 jobs:
@@ -104,7 +105,8 @@ jobs:
                   -D APP_PACKAGE_PREFIX="${APP_PACKAGE_PREFIX}" \
                   -D APP_PACKAGE_NAME="${APP_PACKAGE_NAME}" \
                   -D APP_NAME="${APP_NAME}" \
-                  -D APP_DISPLAY_NAME="${APP_DISPLAY_NAME}"; then
+                  -D APP_DISPLAY_NAME="${APP_DISPLAY_NAME}" \
+                  -D APP_DEFAULT_LANGUAGE="${APP_DEFAULT_LANGUAGE}"; then
               echo "::endgroup::"
               exit 0
             fi
