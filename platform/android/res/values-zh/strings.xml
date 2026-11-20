@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
+    <string name="app_name">RTK 外业助手</string>
     <string name="done_unpacking_msg">完成解包，启动QGIS。</string>
     <string name="unpacking_title">QField准备就绪</string>
     <string name="unpacking_msg">仅在首次打开应用程序时才执行此操作，并且不应持续太长时间。</string>

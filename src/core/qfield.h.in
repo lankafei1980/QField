@@ -66,7 +66,7 @@ class QFIELD_CORE_EXPORT Qfield
     Q_PROPERTY( bool hasSerialPort READ hasSerialPort CONSTANT )
 
   public:
-    static inline const QString appName{ QStringLiteral( "@APP_NAME@" ) };
+    static inline const QString appName{ QStringLiteral( "@APP_DISPLAY_NAME@" ) };
     static inline const QString appVersion{ QStringLiteral( "@APP_VERSION@" ) };
     static inline const QString appVersionStr{ QStringLiteral( "@APP_VERSION_STR@" ) };
     static inline const QString gitRev{ QStringLiteral( "@GIT_REV@" ) };
