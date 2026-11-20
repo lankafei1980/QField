@@ -82,24 +82,38 @@ jobs:
         env:
           WORKSPACE: ${{ github.workspace }}
         run: |
-          cmake -S "${{ github.workspace }}" \
-                -B "${CMAKE_BUILD_DIR}" \
-                -G Ninja \
-                -D CMAKE_BUILD_TYPE=Release \
-                -D ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT} \
-                -D ANDROID_NDK_VERSION="${ANDROID_NDK_VERSION}" \
-                -D ANDROID_BUILD_TOOLS_VERSION="${ANDROID_BUILD_TOOLS_VERSION}" \
-                -D VCPKG_TARGET_TRIPLET="${TRIPLET}" \
-                -D VCPKG_HOST_TRIPLET="x64-linux" \
-                -D VCPKG_INSTALL_OPTIONS="--allow-unsupported;--x-abi-tools-use-exact-versions" \
-                -D WITH_SPIX=OFF \
-                -D APP_VERSION="${APP_VERSION}" \
-                -D APK_VERSION_CODE="${APK_VERSION_CODE}" \
-                -D APP_VERSION_STR="${APP_VERSION_STR}" \
-                -D APP_PACKAGE_PREFIX="${APP_PACKAGE_PREFIX}" \
-                -D APP_PACKAGE_NAME="${APP_PACKAGE_NAME}" \
-                -D APP_NAME="${APP_NAME}" \
-                -D APP_DISPLAY_NAME="${APP_DISPLAY_NAME}"
+          # vcpkg downloads port patches straight from github.com, which
+          # occasionally answers 503; retry the configure step instead of
+          # losing a whole build
+          for attempt in 1 2 3; do
+            echo "::group::configure attempt ${attempt}"
+            if cmake -S "${{ github.workspace }}" \
+                  -B "${CMAKE_BUILD_DIR}" \
+                  -G Ninja \
+                  -D CMAKE_BUILD_TYPE=Release \
+                  -D ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT} \
+                  -D ANDROID_NDK_VERSION="${ANDROID_NDK_VERSION}" \
+                  -D ANDROID_BUILD_TOOLS_VERSION="${ANDROID_BUILD_TOOLS_VERSION}" \
+                  -D VCPKG_TARGET_TRIPLET="${TRIPLET}" \
+                  -D VCPKG_HOST_TRIPLET="x64-linux" \
+                  -D VCPKG_INSTALL_OPTIONS="--allow-unsupported;--x-abi-tools-use-exact-versions" \
+                  -D WITH_SPIX=OFF \
+                  -D APP_VERSION="${APP_VERSION}" \
+                  -D APK_VERSION_CODE="${APK_VERSION_CODE}" \
+                  -D APP_VERSION_STR="${APP_VERSION_STR}" \
+                  -D APP_PACKAGE_PREFIX="${APP_PACKAGE_PREFIX}" \
+                  -D APP_PACKAGE_NAME="${APP_PACKAGE_NAME}" \
+                  -D APP_NAME="${APP_NAME}" \
+                  -D APP_DISPLAY_NAME="${APP_DISPLAY_NAME}"; then
+              echo "::endgroup::"
+              exit 0
+            fi
+            echo "::endgroup::"
+            echo "configure attempt ${attempt} failed, retrying in 30 s"
+            sleep 30
+          done
+          echo "configure failed after 3 attempts"
+          exit 1
 
       - name: 📑 Upload configure logs on failure
         uses: actions/upload-artifact@v7
