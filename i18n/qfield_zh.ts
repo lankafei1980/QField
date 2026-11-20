@@ -7381,6 +7381,22 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
         <source>Forward position to NTRIP caster</source>
         <translation>将位置转发至NTRIP中转站</translation>
     </message>
+    <message>
+        <source>Service provider</source>
+        <translation>服务商</translation>
+    </message>
+    <message>
+        <source>Qianxun FindCM</source>
+        <translation>千寻位置 FindCM</translation>
+    </message>
+    <message>
+        <source>Qianxun: port 8001 = ITRF2008 (epoch 2016.0), 8002 = WGS84 (epoch 2005.0), 8003 = CGCS2000 (epoch 2000.0). Mount point AUTO is picked by the caster.</source>
+        <translation>千寻位置：端口 8001 对应 ITRF2008（历元 2016.0），8002 对应 WGS84（历元 2005.0），8003 对应 CGCS2000（历元 2000.0）；挂载点 AUTO 由服务端自动就近选择。</translation>
+    </message>
+    <message>
+        <source>Custom</source>
+        <translation>自定义</translation>
+    </message>
 </context>
 <context>
     <name>QfPositioningPreciseView</name>

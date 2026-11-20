@@ -64,6 +64,42 @@ QfPopup {
         spacing: 10
         width: page.width - 20
 
+        Label {
+          text: qsTr("Service provider")
+          font: QfTheme.defaultFont
+          color: QfTheme.mainTextColor
+          wrapMode: Text.WordWrap
+          Layout.fillWidth: true
+        }
+
+        QfComboBox {
+          id: ntripProviderComboBox
+          Layout.fillWidth: true
+          font: QfTheme.defaultFont
+
+          popup.font: QfTheme.defaultFont
+          popup.topMargin: mainWindow.sceneTopMargin
+          popup.bottomMargin: mainWindow.sceneTopMargin
+
+          model: [qsTr("Custom"), qsTr("Qianxun FindCM")]
+          currentIndex: 0
+
+          onActivated: index => {
+            if (index === 1) {
+              popup.applyQianxunPreset();
+            }
+          }
+        }
+
+        Label {
+          visible: ntripProviderComboBox.currentIndex === 1
+          text: qsTr("Qianxun: port 8001 = ITRF2008 (epoch 2016.0), 8002 = WGS84 (epoch 2005.0), 8003 = CGCS2000 (epoch 2000.0). Mount point AUTO is picked by the caster.")
+          font: QfTheme.tipFont
+          color: QfTheme.secondaryTextColor
+          wrapMode: Text.WordWrap
+          Layout.fillWidth: true
+        }
+
         GridLayout {
           columns: 2
           columnSpacing: 5
@@ -385,6 +421,19 @@ QfPopup {
     ntripPasswordTextField.text = ntripSettings.password;
     ntripMountPointComboBox.editText = ntripSettings.mountPoint;
     ntripForwardNmeaSentencesSwitch.checked = ntripSettings.forwardNmeaSentences;
+  }
+
+  /**
+   * Fills in the public endpoint of the Qianxun (FindCM) NTRIP service.
+   * Credentials are deliberately left untouched, and the protocol stays as
+   * selected by the user since the caster accepts both NTRIP revisions.
+   */
+  function applyQianxunPreset() {
+    ntripHostTextField.text = "rtk.ntrip.qxwz.com";
+    ntripPortTextField.text = "8003";
+    ntripMountPointComboBox.editText = "AUTO";
+    ntripForwardNmeaSentencesSwitch.checked = true;
+    ntripProviderComboBox.currentIndex = 1;
   }
 
   function createSettingsMap() {
