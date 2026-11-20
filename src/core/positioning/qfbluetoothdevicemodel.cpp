@@ -21,7 +21,35 @@
 #include <QGuiApplication>
 #include <QPermissions>
 #include <QSettings>
+#include <QStringList>
 #include <qgis.h>
+
+
+namespace
+{
+  /**
+   * Returns TRUE when a bluetooth device name looks like a GNSS receiver. Used
+   * to list receivers (SparkFun RTK, Emlid, ArduSimple, ...) before unrelated
+   * paired accessories so that the field workflow is quicker.
+   */
+  bool isLikelyGnssDevice( const QString &name )
+  {
+    static const QStringList keywords = { QStringLiteral( "sparkfun" ), QStringLiteral( "rtk" ),  QStringLiteral( "facet" ),
+                                          QStringLiteral( "gnss" ),     QStringLiteral( "gps" ),  QStringLiteral( "u-blox" ),
+                                          QStringLiteral( "ublox" ),    QStringLiteral( "emlid" ), QStringLiteral( "ardusimple" ),
+                                          QStringLiteral( "septentrio" ), QStringLiteral( "trimble" ), QStringLiteral( "leica" ),
+                                          QStringLiteral( "sxblue" ),   QStringLiteral( "nmea" ), QStringLiteral( "reach" ) };
+    const QString lower = name.toLower();
+    for ( const QString &keyword : keywords )
+    {
+      if ( lower.contains( keyword ) )
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+} // namespace
 
 
 QfBluetoothDeviceModel::QfBluetoothDeviceModel( QObject *parent )
@@ -192,9 +220,18 @@ void QfBluetoothDeviceModel::deviceDiscovered( const QBluetoothDeviceInfo &info 
                .arg( info.name(), info.address().toString(), deviceAddress( info ) )
                .arg( mLocalDevice->pairingStatus( info.address() ) );
 
-  const int index = static_cast<int>( mDiscoveredDevices.size() );
+  int index = static_cast<int>( mDiscoveredDevices.size() );
+  if ( isLikelyGnssDevice( info.name() ) )
+  {
+    // Keep GNSS receivers at the top of the list
+    index = 0;
+    while ( index < mDiscoveredDevices.size() && isLikelyGnssDevice( mDiscoveredDevices.at( index ).name() ) )
+    {
+      index++;
+    }
+  }
   beginInsertRows( QModelIndex(), index, index );
-  mDiscoveredDevices.append( info );
+  mDiscoveredDevices.insert( index, info );
   endInsertRows();
 
   mLastDiscoveredCount++;

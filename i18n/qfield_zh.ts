@@ -3870,6 +3870,10 @@ Cancel to make a minimal device scan instead.</source>
         <source>Classic (BT)</source>
         <translation>经典 (BT)</translation>
     </message>
+    <message>
+        <source>Switch the receiver on before scanning. If it does not show up, pair it in the Android Bluetooth settings first (SparkFun RTK pairing code: 1234).</source>
+        <translation>扫描前请先打开接收机。如果列表中看不到它，请先在安卓系统蓝牙设置里完成配对（SparkFun RTK 配对码：1234）。</translation>
+    </message>
 </context>
 <context>
     <name>QfBluetoothDeviceModel</name>

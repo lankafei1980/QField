@@ -331,6 +331,7 @@ class QfPositioningSource : public QObject
     void setupDevice();
     void startNtripClient();
     void stopNtripClient();
+    void scheduleNtripReconnect();
     void setNtripState( NtripState state );
     void setNtripLastError( const QString &error );
 
@@ -356,6 +357,11 @@ class QfPositioningSource : public QObject
     qint64 mNtripBytesSent = 0;
     qint64 mNtripBytesReceived = 0;
     QDateTime mNtripLastBytesReceivedUtcDateTime;
+    QTimer mNtripReconnectTimer;
+    int mNtripReconnectAttempt = 0;
+
+    static constexpr int NTRIP_RECONNECT_MIN_DELAY_MS = 5000;
+    static constexpr int NTRIP_RECONNECT_MAX_DELAY_MS = 60000;
 
     std::unique_ptr<QfAbstractGnssReceiver> mReceiver;
     std::unique_ptr<QfNtripClient> mNtripClient;

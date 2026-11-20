@@ -46,6 +46,11 @@ QfPositioningSource::QfPositioningSource( QObject *parent )
   // too many signals
   mCompassTimer.setInterval( 200 );
   connect( &mCompassTimer, &QTimer::timeout, this, &QfPositioningSource::processCompassReading );
+
+  // Retry a lost NTRIP connection with a capped exponential backoff so that
+  // corrections keep flowing across mobile network hiccups
+  mNtripReconnectTimer.setSingleShot( true );
+  connect( &mNtripReconnectTimer, &QTimer::timeout, this, &QfPositioningSource::startNtripClient );
 }
 
 void QfPositioningSource::setActive( bool active )
@@ -480,6 +485,8 @@ void QfPositioningSource::triggerDisconnectDevice()
 
 void QfPositioningSource::startNtripClient()
 {
+  mNtripReconnectTimer.stop();
+
   if ( !mNtripSettings.isValid() )
   {
     return;
@@ -495,6 +502,7 @@ void QfPositioningSource::startNtripClient()
     mNtripClient = std::make_unique<QfNtripClient>( this );
 
     connect( mNtripClient.get(), &QfNtripClient::streamConnected, this, [this]() {
+      mNtripReconnectAttempt = 0;
       setNtripState( NtripState::Connected );
       setNtripLastError( QString() );
     } );
@@ -503,9 +511,19 @@ void QfPositioningSource::startNtripClient()
       setNtripState( NtripState::Disconnected );
     } );
 
-    connect( mNtripClient.get(), &QfNtripClient::errorOccurred, this, [this]( const QString &msg ) {
+    connect( mNtripClient.get(), &QfNtripClient::errorOccurred, this, [this]( const QString &msg, bool isPermanent ) {
       setNtripLastError( msg );
-      qInfo() << "NTRIP Client Error:" << msg;
+      qInfo() << "NTRIP Client Error:" << msg << "(permanent:" << isPermanent << ")";
+
+      if ( isPermanent )
+      {
+        // Bad credentials / unknown mount point: retrying cannot succeed
+        mNtripReconnectTimer.stop();
+      }
+      else
+      {
+        scheduleNtripReconnect();
+      }
     } );
 
     connect( mNtripClient.get(), &QfNtripClient::bytesSentChanged, this, [this]() {
@@ -538,8 +556,31 @@ void QfPositioningSource::startNtripClient()
   setNtripState( NtripState::Connecting );
 }
 
+void QfPositioningSource::scheduleNtripReconnect()
+{
+  if ( !mEnableNtrip || !mReceiver || !mNtripSettings.isValid() )
+  {
+    return;
+  }
+
+  if ( !( mReceiver->capabilities() & QfAbstractGnssReceiver::NtripCorrection ) )
+  {
+    return;
+  }
+
+  int delay = NTRIP_RECONNECT_MIN_DELAY_MS * ( 1 << qMin( mNtripReconnectAttempt, 4 ) );
+  delay = qMin( delay, NTRIP_RECONNECT_MAX_DELAY_MS );
+  mNtripReconnectAttempt++;
+
+  qInfo() << QStringLiteral( "NTRIP client: reconnecting in %1 ms (attempt %2)" ).arg( delay ).arg( mNtripReconnectAttempt );
+  mNtripReconnectTimer.start( delay );
+}
+
 void QfPositioningSource::stopNtripClient()
 {
+  mNtripReconnectTimer.stop();
+  mNtripReconnectAttempt = 0;
+
   if ( mNtripClient )
   {
     mNtripClient->stop();

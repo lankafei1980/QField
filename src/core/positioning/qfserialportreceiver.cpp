@@ -36,6 +36,13 @@ QfSerialPortReceiver::~QfSerialPortReceiver()
   mSerialPort = nullptr;
 }
 
+QfAbstractGnssReceiver::Capabilities QfSerialPortReceiver::capabilities() const
+{
+  // Serial ports can accept RTCM corrections written back to the device, which
+  // enables NTRIP with USB / OTG receivers (e.g. SparkFun RTK over USB-C)
+  return QfNmeaGnssReceiver::capabilities() | QfAbstractGnssReceiver::NtripCorrection;
+}
+
 void QfSerialPortReceiver::handleDisconnectDevice()
 {
   if ( socketState() == QAbstractSocket::ConnectedState )
@@ -55,10 +62,12 @@ void QfSerialPortReceiver::handleConnectDevice()
 
   mSerialPort->setPortName( mAddress );
   mSerialPort->setBaudRate( QSerialPort::Baud9600 );
-  if ( mSerialPort->open( QIODevice::ReadOnly ) )
+  if ( !mSerialPort->open( QIODevice::ReadWrite ) && !mSerialPort->open( QIODevice::ReadOnly ) )
   {
-    setSocketState( QAbstractSocket::ConnectedState );
+    return;
   }
+
+  setSocketState( QAbstractSocket::ConnectedState );
 }
 
 void QfSerialPortReceiver::handleError( QSerialPort::SerialPortError error )

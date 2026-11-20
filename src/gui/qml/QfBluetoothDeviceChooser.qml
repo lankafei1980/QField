@@ -82,6 +82,14 @@ Item {
 
     Label {
       Layout.fillWidth: true
+      text: qsTr("Switch the receiver on before scanning. If it does not show up, pair it in the Android Bluetooth settings first (SparkFun RTK pairing code: 1234).")
+      font: QfTheme.tipFont
+      color: QfTheme.secondaryTextColor
+      wrapMode: Text.WordWrap
+    }
+
+    Label {
+      Layout.fillWidth: true
       text: bluetoothDeviceComboBox.count > 0 ? qsTr("Select the Bluetooth device from the list below:") : !bluetoothDeviceChooser.isScanning && bluetoothDeviceChooser.scannedOnce ? qsTr("No Bluetooth devices detected.") : ""
       font: QfTheme.defaultFont
       wrapMode: Text.WordWrap

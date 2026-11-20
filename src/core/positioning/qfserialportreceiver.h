@@ -34,6 +34,8 @@ class QfSerialPortReceiver : public QfNmeaGnssReceiver
     explicit QfSerialPortReceiver( const QString &address = QString(), QObject *parent = nullptr );
     ~QfSerialPortReceiver() override;
 
+    QfAbstractGnssReceiver::Capabilities capabilities() const override;
+
     static QLatin1String identifier;
 
   private:
