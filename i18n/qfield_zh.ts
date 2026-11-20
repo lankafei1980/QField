@@ -10558,4 +10558,31 @@ to show actions</source>
         <translation type="vanished">删除参考要素失败</translation>
     </message>
 </context>
+<context>
+    <name>QfNtripSocket</name>
+    <message>
+        <source>NTRIP authentication failed, check the username and password (HTTP %1)</source>
+        <translation>NTRIP 认证失败，请检查用户名和密码（HTTP %1）</translation>
+    </message>
+    <message>
+        <source>NTRIP caster %1:%2 (%3) returned HTTP %4</source>
+        <translation>NTRIP 服务器 %1:%2（%3）返回 HTTP %4</translation>
+    </message>
+    <message>
+        <source>NTRIP caster %1:%2 (%3) returned an unparsable response</source>
+        <translation>NTRIP 服务器 %1:%2（%3）返回了无法解析的响应</translation>
+    </message>
+    <message>
+        <source>NTRIP mount point '%1' not found on %2:%3 (received SOURCETABLE)</source>
+        <translation>在 %2:%3 上找不到挂载点 '%1'（收到 SOURCETABLE）</translation>
+    </message>
+    <message>
+        <source>Disconnected from NTRIP caster %1:%2 (%3)</source>
+        <translation>与 NTRIP 服务器 %1:%2（%3）的连接已断开</translation>
+    </message>
+    <message>
+        <source>NTRIP socket error on %1:%2 (%3): %4 (%5)</source>
+        <translation>NTRIP 套接字错误 %1:%2（%3）：%4（%5）</translation>
+    </message>
+</context>
 </TS>

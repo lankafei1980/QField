@@ -421,6 +421,7 @@ QfPopup {
     ntripPasswordTextField.text = ntripSettings.password;
     ntripMountPointComboBox.editText = ntripSettings.mountPoint;
     ntripForwardNmeaSentencesSwitch.checked = ntripSettings.forwardNmeaSentences;
+    ntripProviderComboBox.currentIndex = ntripSettings.host === "rtk.ntrip.qxwz.com" ? 1 : 0;
   }
 
   /**

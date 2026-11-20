@@ -436,10 +436,8 @@ void QfNtripSocket::onReadyRead()
       if ( headerBlock.startsWith( "SOURCETABLE" ) )
       {
         mPendingError = true;
-        emit errorOccurred( QStringLiteral( "NTRIP mountpoint '" ) + mMountPoint
-                              + QStringLiteral( "' not found on " ) + mHost
-                              + QStringLiteral( ":" ) + QString::number( mPort )
-                              + QStringLiteral( " (received SOURCETABLE)" ),
+        emit errorOccurred( tr( "NTRIP mount point '%1' not found on %2:%3 (received SOURCETABLE)" )
+                              .arg( mMountPoint, mHost, QString::number( mPort ) ),
                             true );
         mSocket->abort();
         return;
@@ -474,30 +472,23 @@ void QfNtripSocket::onReadyRead()
       else if ( statusCode > 0 && isPermanentHttpError( statusCode ) )
       {
         mPendingError = true;
-        emit errorOccurred( QStringLiteral( "NTRIP caster " ) + mHost
-                              + QStringLiteral( ":" ) + QString::number( mPort )
-                              + QStringLiteral( " (" ) + mMountPoint
-                              + QStringLiteral( ") returned HTTP " ) + QString::number( statusCode ),
-                            true );
+        const QString message = ( statusCode == 401 || statusCode == 403 )
+                                  ? tr( "NTRIP authentication failed, check the username and password (HTTP %1)" ).arg( statusCode )
+                                  : tr( "NTRIP caster %1:%2 (%3) returned HTTP %4" ).arg( mHost, QString::number( mPort ), mMountPoint, QString::number( statusCode ) );
+        emit errorOccurred( message, true );
         mSocket->abort();
       }
       else if ( statusCode > 0 )
       {
         mPendingError = true;
-        emit errorOccurred( QStringLiteral( "NTRIP caster " ) + mHost
-                              + QStringLiteral( ":" ) + QString::number( mPort )
-                              + QStringLiteral( " (" ) + mMountPoint
-                              + QStringLiteral( ") returned HTTP " ) + QString::number( statusCode ),
+        emit errorOccurred( tr( "NTRIP caster %1:%2 (%3) returned HTTP %4" ).arg( mHost, QString::number( mPort ), mMountPoint, QString::number( statusCode ) ),
                             false );
         mSocket->abort();
       }
       else
       {
         mPendingError = true;
-        emit errorOccurred( QStringLiteral( "NTRIP caster " ) + mHost
-                              + QStringLiteral( ":" ) + QString::number( mPort )
-                              + QStringLiteral( " (" ) + mMountPoint
-                              + QStringLiteral( ") returned unparsable response" ),
+        emit errorOccurred( tr( "NTRIP caster %1:%2 (%3) returned an unparsable response" ).arg( mHost, QString::number( mPort ), mMountPoint ),
                             false );
         mSocket->abort();
       }
@@ -586,27 +577,24 @@ void QfNtripSocket::onDisconnected()
   if ( !mPendingError )
   {
     // Connection failed or disconnected before headers were processed
-    emit errorOccurred( QStringLiteral( "Disconnected from NTRIP caster " ) + mHost
-                          + QStringLiteral( ":" ) + QString::number( mPort )
-                          + QStringLiteral( " (" ) + mMountPoint + QStringLiteral( ")" ),
+    emit errorOccurred( tr( "Disconnected from NTRIP caster %1:%2 (%3)" ).arg( mHost, QString::number( mPort ), mMountPoint ),
                         false );
   }
 }
 
 void QfNtripSocket::onSocketError( QAbstractSocket::SocketError error )
 {
-  emit errorOccurred( QStringLiteral( "NTRIP socket error on " ) + mHost
-                        + QStringLiteral( ":" ) + QString::number( mPort )
-                        + QStringLiteral( " (" ) + mMountPoint
-                        + QStringLiteral( "): " ) + QString::number( static_cast<int>( error ) )
-                        + QStringLiteral( " (" ) + mSocket->errorString() + QStringLiteral( ")" ),
+  emit errorOccurred( tr( "NTRIP socket error on %1:%2 (%3): %4 (%5)" )
+                        .arg( mHost, QString::number( mPort ), mMountPoint, QString::number( static_cast<int>( error ) ), mSocket->errorString() ),
                       false );
 }
 
 int QfNtripSocket::parseHttpStatusCode( const QByteArray &headerBlock )
 {
   // Match first line: "HTTP/1.0 200 OK", "ICY 200 OK", "SOURCETABLE 200 OK"
-  const thread_local QRegularExpression re( QStringLiteral( "^(?:HTTP/\\d\\.\\d|ICY|SOURCETABLE)\\s+(\\d{3})" ) );
+  // Casters answer with "HTTP/1.0 200 OK", "ICY 200 OK", "SOURCETABLE 200 OK" but
+  // also, notably Qianxun, with a bare "HTTP 401 Unauthorized" status line
+  const thread_local QRegularExpression re( QStringLiteral( "^(?:HTTP(?:/\\d(?:\\.\\d+)?)?|ICY|SOURCETABLE)\\s+(\\d{3})" ) );
   const int firstNewLine = headerBlock.indexOf( "\r\n" );
   const QString firstLine = QString::fromLatin1( firstNewLine > 0 ? headerBlock.left( firstNewLine ) : headerBlock );
   const QRegularExpressionMatch match = re.match( firstLine );
