@@ -70,6 +70,14 @@ jobs:
             libxkbcommon-x11-dev autoconf-archive libgstreamer-gl1.0-0 \
             libgstreamer-plugins-base1.0-0 libfuse2 libcups2-dev nasm libltdl-dev
 
+      - name: 💾 Cache vcpkg binary artifacts
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/vcpkg/archives
+          key: vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-${{ hashFiles('vcpkg.json', 'vcpkg/**') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-
+
       - name: 🌱 Configure
         env:
           WORKSPACE: ${{ github.workspace }}
