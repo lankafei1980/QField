@@ -2,6 +2,7 @@ set(QFIELD_GUI_QML_FILES
     QfActionButton.qml
     QfAudioClipRecorder.qml
     QfBadge.qml
+    QfBasemapSettingsPanel.qml
     QfBluetoothDeviceChooser.qml
     QfBookmarkHighlight.qml
     QfBookmarkList.qml

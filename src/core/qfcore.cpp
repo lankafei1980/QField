@@ -31,6 +31,7 @@
 #include "processing/qfprocessingalgorithmparametersmodel.h"
 #include "processing/qfprocessingalgorithmsmodel.h"
 #include "qfappexpressioncontextscopesgenerator.h"
+#include "basemaps/qfbasemapservice.h"
 #include "qfappinterface.h"
 #include "qfaudioanalyzer.h"
 #include "qfaudiorecorder.h"
@@ -216,6 +217,7 @@ namespace QfCore
       return scriptEngine->toScriptValue( Qfield() );
     } );
     REGISTER_SINGLETON( "org.qfield.core", QfAuthUtils, "QfAuthUtils" );
+    REGISTER_SINGLETON( "org.qfield.core", QfBasemapService, "QfBasemapService" );
     REGISTER_SINGLETON( "org.qfield.core", QfCoordinateReferenceSystemUtils, "QfCoordinateReferenceSystemUtils" );
     REGISTER_SINGLETON( "org.qfield.core", QfExpressionContextUtils, "QfExpressionContextUtils" );
     REGISTER_SINGLETON( "org.qfield.core", QfFeatureUtils, "QfFeatureUtils" );

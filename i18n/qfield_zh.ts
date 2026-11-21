@@ -3770,6 +3770,10 @@ Cancel to make a minimal device scan instead.</source>
         <source>%1 Settings</source>
         <translation>%1设置</translation>
     </message>
+    <message>
+        <source>Basemaps</source>
+        <translation>底图</translation>
+    </message>
 </context>
 <context>
     <name>QfAttributeFormModelBase</name>
@@ -10583,6 +10587,112 @@ to show actions</source>
     <message>
         <source>NTRIP socket error on %1:%2 (%3): %4 (%5)</source>
         <translation>NTRIP 套接字错误 %1:%2（%3）：%4（%5）</translation>
+    </message>
+</context>
+<context>
+    <name>QfBasemapService</name>
+    <message>
+        <source>Configure the server address first</source>
+        <translation>请先配置服务器地址</translation>
+    </message>
+    <message>
+        <source>Enter the account and password</source>
+        <translation>请输入账号和密码</translation>
+    </message>
+    <message>
+        <source>Connection failed: %1</source>
+        <translation>连接失败：%1</translation>
+    </message>
+    <message>
+        <source>Login failed</source>
+        <translation>登录失败</translation>
+    </message>
+    <message>
+        <source>Connected to %1</source>
+        <translation>已连接到 %1</translation>
+    </message>
+    <message>
+        <source>Signed out</source>
+        <translation>已退出登录</translation>
+    </message>
+    <message>
+        <source>Request failed: %1</source>
+        <translation>请求失败：%1</translation>
+    </message>
+    <message>
+        <source>Server refused the request</source>
+        <translation>服务器拒绝了该请求</translation>
+    </message>
+    <message>
+        <source>Tianditu vector</source>
+        <translation>天地图矢量底图</translation>
+    </message>
+    <message>
+        <source>Tianditu vector labels</source>
+        <translation>天地图矢量注记</translation>
+    </message>
+    <message>
+        <source>Tianditu imagery</source>
+        <translation>天地图影像底图</translation>
+    </message>
+    <message>
+        <source>Tianditu imagery labels</source>
+        <translation>天地图影像注记</translation>
+    </message>
+    <message>
+        <source>Jilin-1 satellite</source>
+        <translation>吉林一号卫星影像</translation>
+    </message>
+    <message>
+        <source>Orthophoto: %1</source>
+        <translation>正射影像：%1</translation>
+    </message>
+    <message>
+        <source>%1 orthophoto(s) available</source>
+        <translation>可用正射影像 %1 幅</translation>
+    </message>
+    <message>
+        <source>Could not load "%1"</source>
+        <translation>无法加载「%1」</translation>
+    </message>
+</context>
+<context>
+    <name>QfBasemapSettingsPanel</name>
+    <message>
+        <source>Connect to the map service to load its basemaps and orthophotos. Credentials are stored on this device only.</source>
+        <translation>连接地图服务后可加载其底图与正射影像；账号密码只保存在本机。</translation>
+    </message>
+    <message>
+        <source>Server</source>
+        <translation>服务器</translation>
+    </message>
+    <message>
+        <source>Account</source>
+        <translation>账号</translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation>密码</translation>
+    </message>
+    <message>
+        <source>Connect</source>
+        <translation>连接</translation>
+    </message>
+    <message>
+        <source>Reload layers</source>
+        <translation>重新加载图层</translation>
+    </message>
+    <message>
+        <source>Sign out</source>
+        <translation>退出登录</translation>
+    </message>
+    <message>
+        <source>Basemaps</source>
+        <translation>底图</translation>
+    </message>
+    <message>
+        <source>Orthophotos</source>
+        <translation>正射影像</translation>
     </message>
 </context>
 </TS>

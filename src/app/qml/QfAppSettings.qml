@@ -308,7 +308,7 @@ Page {
 
     QfTabBar {
       id: bar
-      model: [qsTr("General"), qsTr("Positioning"), qsTr("Variables")]
+      model: [qsTr("General"), qsTr("Positioning"), qsTr("Variables"), qsTr("Basemaps")]
       Layout.fillWidth: true
       Layout.preferredHeight: defaultHeight
     }
@@ -2240,6 +2240,22 @@ Page {
           anchors.fill: parent
           anchors.margins: 4
           anchors.bottomMargin: 4 + mainWindow.sceneBottomMargin
+        }
+      }
+
+      Item {
+        Flickable {
+          topMargin: 5
+          ScrollBar.vertical: QfScrollBar {}
+          anchors.fill: parent
+          clip: true
+          contentWidth: basemapPanel.width
+          contentHeight: basemapPanel.implicitHeight
+
+          QfBasemapSettingsPanel {
+            id: basemapPanel
+            width: swipeView.width
+          }
         }
       }
     }

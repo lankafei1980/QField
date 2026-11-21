@@ -52,6 +52,10 @@ ApplicationWindow {
   Material.theme: QfTheme.darkTheme ? Material.Dark : Material.Light
   Material.accent: QfTheme.mainColor
 
+  // Instantiate the online basemap service at startup so that the user's
+  // basemap / orthophoto selection is restored right after each project load
+  property var basemapService: QfBasemapService
+
   property bool sceneLoaded: false
   property bool sceneBorderless: false
   property double sceneTopMargin: SafeArea.margins.top

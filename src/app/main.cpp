@@ -53,6 +53,7 @@
 #include <QtWebView/QtWebView>
 
 #if defined( Q_OS_IOS )
+#include <QFile>
 #include <QSslCertificate>
 #include <QSslConfiguration>
 #endif
@@ -194,6 +195,27 @@ int main( int argc, char **argv )
 
   QfPlatformUtilities *platformUtils = QfPlatformUtilities::instance();
   platformUtils->initSystem();
+
+#if defined( Q_OS_ANDROID )
+  // The private basemap server (NEWGIS) uses a certificate issued by a private
+  // CA; ship that CA so that tile/layer requests are trusted without having to
+  // install anything on the device.
+  {
+    QFile caFile( QStringLiteral( ":/ca/newgis-ca.pem" ) );
+    if ( caFile.open( QIODevice::ReadOnly ) )
+    {
+      const QList<QSslCertificate> extraCerts = QSslCertificate::fromData( caFile.readAll(), QSsl::Pem );
+      if ( !extraCerts.isEmpty() )
+      {
+        QSslConfiguration sslConfig = QSslConfiguration::defaultConfiguration();
+        QList<QSslCertificate> certs = sslConfig.caCertificates();
+        certs.append( extraCerts );
+        sslConfig.setCaCertificates( certs );
+        QSslConfiguration::setDefaultConfiguration( sslConfig );
+      }
+    }
+  }
+#endif
 
 #if defined( RELATIVE_PREFIX_PATH ) && defined( Q_OS_IOS )
   const QList<QSslCertificate> certs = QSslCertificate::fromPath( QDir::toNativeSeparators( QfPlatformUtilities::instance()->systemSharedDataLocation() + "/cacert.pem" ) );

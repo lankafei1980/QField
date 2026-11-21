@@ -22,6 +22,9 @@
 <qresource prefix="/templates">
     <file alias="layout.qpt">@RESOURCES_DIR@/templates/layout.qpt</file>
 </qresource>
+<qresource prefix="/ca">
+    <file alias="newgis-ca.pem">@RESOURCES_DIR@/ca/newgis-ca.pem</file>
+</qresource>
 <qresource prefix="/theme">
     <file alias="theme.json">@APP_THEME_JSON_PATH@</file>
 </qresource>

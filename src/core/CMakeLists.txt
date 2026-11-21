@@ -3,6 +3,7 @@ set(QFIELD_CORE_SRCS
     cogo/qfcogooperation.cpp
     cogo/qfcogooperationsmodel.cpp
     cogo/qfcogoregistry.cpp
+    basemaps/qfbasemapservice.cpp
     platforms/qfplatformutilities.cpp
     utils/qfauthutils.cpp
     utils/qfcoordinatereferencesystemutils.cpp
@@ -120,6 +121,7 @@ set(QFIELD_CORE_HDRS
     cogo/qfcogooperation.h
     cogo/qfcogooperationsmodel.h
     cogo/qfcogoregistry.h
+    basemaps/qfbasemapservice.h
     platforms/qfplatformutilities.h
     utils/qfauthutils.h
     utils/qfcoordinatereferencesystemutils.h
