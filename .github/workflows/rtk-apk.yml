@@ -66,6 +66,18 @@ jobs:
         # a cache whose paths are missing
         run: mkdir -p ~/.cache/vcpkg/archives /home/runner/vcpkg-downloads
 
+      - name: 💾 Cache Gradle dependencies
+        # Maven Central rate limits the shared runner IPs (HTTP 429); keeping the
+        # Gradle caches makes the packaging step independent of that
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('platform/android/build.gradle.in', 'platform/android/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
       - name: 🐩 Install CMake and Ninja
         uses: lukka/get-cmake@latest
         with:
