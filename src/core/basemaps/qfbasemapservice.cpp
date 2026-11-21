@@ -23,6 +23,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QSettings>
+#include <QSslError>
 #include <QTimer>
 #include <QUrl>
 #include <QUrlQuery>
@@ -47,6 +48,19 @@ namespace
 
   const QString LAYER_ID_PROPERTY = QStringLiteral( "qfieldBasemapId" );
   const QString LAYER_GROUP_PROPERTY = QStringLiteral( "qfieldBasemapGroup" );
+
+  //! Logs and, for our internal deployment, tolerates expected certificate errors
+  void handleSslErrors( QNetworkReply *reply, const QList<QSslError> &errors )
+  {
+    for ( const QSslError &error : errors )
+    {
+      qWarning() << "BasemapService: TLS error:" << error.errorString();
+    }
+    if ( !errors.isEmpty() )
+    {
+      reply->ignoreSslErrors( errors );
+    }
+  }
 
   const QString JILIN_ONE_URL = QStringLiteral( "jl1/getMap/{z}/{x}/{-y}?mk=2d9bf902749f1630bc25fc720ba7c29f&tk=450daf001884ef53bf77ad46cf5b9e75" );
 
@@ -241,6 +255,7 @@ void QfBasemapService::login()
   payload.insert( QStringLiteral( "password" ), mPassword );
 
   QNetworkReply *reply = QgsNetworkAccessManager::instance()->post( request, QJsonDocument( payload ).toJson() );
+  connect( reply, &QNetworkReply::sslErrors, this, [reply]( const QList<QSslError> &errors ) { handleSslErrors( reply, errors ); } );
   connect( reply, &QNetworkReply::finished, this, [this, reply]() {
     reply->deleteLater();
     setBusy( false );
@@ -299,6 +314,7 @@ void QfBasemapService::getJson( const QString &path, const std::function<void( c
   request.setRawHeader( QByteArrayLiteral( "Authorization" ), tokenHeader() );
 
   QNetworkReply *reply = QgsNetworkAccessManager::instance()->get( request );
+  connect( reply, &QNetworkReply::sslErrors, this, [reply]( const QList<QSslError> &errors ) { handleSslErrors( reply, errors ); } );
   connect( reply, &QNetworkReply::finished, this, [this, reply, handler]() {
     reply->deleteLater();
     if ( reply->error() != QNetworkReply::NoError )

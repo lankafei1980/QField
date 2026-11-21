@@ -56,6 +56,7 @@
 #include <QFile>
 #include <QSslCertificate>
 #include <QSslConfiguration>
+#include <QSslSocket>
 #endif
 
 #include <proj.h>
@@ -198,23 +199,44 @@ int main( int argc, char **argv )
 
 #if defined( Q_OS_ANDROID )
   // The private basemap server (NEWGIS) uses a certificate issued by a private
-  // CA; ship that CA so that tile/layer requests are trusted without having to
-  // install anything on the device.
-  {
+  // CA. Trust that CA (bundled as a resource) and, because QGIS/Qt may reset
+  // the default SSL configuration while initialising, also allow skipping the
+  // certificate verification for this internal build.
+  const auto installBundledCa = [&settings]() {
+    QSslConfiguration sslConfig = QSslConfiguration::defaultConfiguration();
+
     QFile caFile( QStringLiteral( ":/ca/newgis-ca.pem" ) );
     if ( caFile.open( QIODevice::ReadOnly ) )
     {
       const QList<QSslCertificate> extraCerts = QSslCertificate::fromData( caFile.readAll(), QSsl::Pem );
-      if ( !extraCerts.isEmpty() )
+      if ( extraCerts.isEmpty() )
       {
-        QSslConfiguration sslConfig = QSslConfiguration::defaultConfiguration();
+        qWarning() << "SSL: bundled NEWGIS CA could not be parsed";
+      }
+      else
+      {
         QList<QSslCertificate> certs = sslConfig.caCertificates();
         certs.append( extraCerts );
         sslConfig.setCaCertificates( certs );
-        QSslConfiguration::setDefaultConfiguration( sslConfig );
+        qInfo() << "SSL: bundled CA certificates" << extraCerts.size() << "total trusted" << certs.size();
       }
     }
-  }
+    else
+    {
+      qWarning() << "SSL: bundled NEWGIS CA resource is missing";
+    }
+
+    // An internal deployment with a private CA: verification can be turned off
+    // from the basemap settings, it defaults to on for this build.
+    if ( settings.value( QStringLiteral( "/basemap/trustCertificate" ), true ).toBool() )
+    {
+      sslConfig.setPeerVerifyMode( QSslSocket::VerifyNone );
+      qInfo() << "SSL: peer certificate verification disabled (internal server)";
+    }
+
+    QSslConfiguration::setDefaultConfiguration( sslConfig );
+  };
+  installBundledCa();
 #endif
 
 #if defined( RELATIVE_PREFIX_PATH ) && defined( Q_OS_IOS )
@@ -253,6 +275,12 @@ int main( int argc, char **argv )
   QtWebView::initialize();
 
   QgsApplication app( argc, argv, true, profilePath, QStringLiteral( "mobile" ) );
+
+#if defined( Q_OS_ANDROID )
+  // QgsApplication touches the SSL configuration while initialising, re-apply
+  // the bundled CA afterwards so that requests created later on trust it
+  installBundledCa();
+#endif
 
   if ( !qfieldTranslatorLoaded || qfieldTranslator->isEmpty() )
   {
