@@ -375,9 +375,9 @@ void QfBasemapService::fetchRasters()
       entry.name = tr( "Orthophoto: %1" ).arg( displayName );
       entry.group = QStringLiteral( "ortho" );
       entry.url = mServerUrl
-                  + QStringLiteral( "/titiler/cog/tiles/WebMercatorQuad/{z}/{x}/{y}@2x.webp?url=/data/" )
+                  + QStringLiteral( "/titiler/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.webp?url=/data/" )
                   + QString::fromLatin1( QUrl::toPercentEncoding( name ) );
-      entry.zmax = 22;
+      entry.zmax = 20;
       entry.enabled = mEnabledIds.contains( entry.id );
       mCatalog.append( entry );
     }

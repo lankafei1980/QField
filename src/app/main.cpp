@@ -53,10 +53,12 @@
 #include <QtWebView/QtWebView>
 
 #if defined( Q_OS_IOS )
+#include <QAbstractNetworkCache>
 #include <QFile>
 #include <QSslCertificate>
 #include <QSslConfiguration>
 #include <QSslSocket>
+#include <qgsnetworkaccessmanager.h>
 #endif
 
 #include <proj.h>
@@ -280,6 +282,14 @@ int main( int argc, char **argv )
   // QgsApplication touches the SSL configuration while initialising, re-apply
   // the bundled CA afterwards so that requests created later on trust it
   installBundledCa();
+
+  // Map tiles are the bulk of the network traffic: give the network disk cache
+  // a size that can actually hold a survey area's worth of tiles
+  if ( QAbstractNetworkCache *networkCache = QgsNetworkAccessManager::instance()->cache() )
+  {
+    networkCache->setMaximumCacheSize( 256LL * 1024 * 1024 );
+    qInfo() << "Network cache size set to" << networkCache->maximumCacheSize() << "bytes";
+  }
 #endif
 
   if ( !qfieldTranslatorLoaded || qfieldTranslator->isEmpty() )
