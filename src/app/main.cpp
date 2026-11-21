@@ -40,7 +40,6 @@
 #include <Spix/QtQmlBot.h>
 #endif
 
-#include <QAbstractNetworkCache>
 #include <QApplication>
 #include <QDialog>
 #include <QDir>
@@ -49,6 +48,7 @@
 #include <QLabel>
 #include <QLocale>
 #include <QMainWindow>
+#include <QNetworkDiskCache>
 #include <QSettings>
 #include <QSslCertificate>
 #include <QSslConfiguration>
@@ -282,7 +282,7 @@ int main( int argc, char **argv )
 
   // Map tiles are the bulk of the network traffic: give the network disk cache
   // a size that can actually hold a survey area's worth of tiles
-  if ( QAbstractNetworkCache *networkCache = QgsNetworkAccessManager::instance()->cache() )
+  if ( QNetworkDiskCache *networkCache = qobject_cast<QNetworkDiskCache *>( QgsNetworkAccessManager::instance()->cache() ) )
   {
     networkCache->setMaximumCacheSize( 256LL * 1024 * 1024 );
     qInfo() << "Network cache size set to" << networkCache->maximumCacheSize() << "bytes";
