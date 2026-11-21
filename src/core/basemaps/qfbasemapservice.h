@@ -81,6 +81,14 @@ class QfBasemapService : public QObject
     //! Sets the opacity (0..1) of one catalog entry
     Q_INVOKABLE void setLayerOpacity( const QString &id, double opacity );
 
+    /**
+     * Returns an encoded QGIS layer URI for one catalog entry, or an empty
+     * string when the entry is not available (e.g. no Tianditu key yet). Used
+     * by the project creation screen to embed an online basemap in a brand new
+     * project.
+     */
+    Q_INVOKABLE QString creationUri( const QString &id ) const;
+
   signals:
     void serverUrlChanged();
     void usernameChanged();
@@ -108,6 +116,7 @@ class QfBasemapService : public QObject
     void rebuildCatalog();
     void fetchSysConfig();
     void fetchRasters();
+    QString entryUri( const Entry &entry ) const;
     void addEntryLayer( const QString &id );
     void removeEntryLayer( const QString &id );
     void restoreLayers();

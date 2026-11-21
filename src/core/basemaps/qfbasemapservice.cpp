@@ -372,6 +372,35 @@ void QfBasemapService::fetchRasters()
   } );
 }
 
+QString QfBasemapService::entryUri( const Entry &entry ) const
+{
+  if ( entry.url.isEmpty() )
+  {
+    return QString();
+  }
+
+  QString url = entry.url;
+  if ( !url.startsWith( QLatin1String( "http" ) ) )
+  {
+    url = mServerUrl + '/' + url;
+  }
+
+  return QStringLiteral( "type=xyz&url=%1&zmin=0&zmax=%2" )
+    .arg( QString::fromLatin1( QUrl::toPercentEncoding( url ) ), QString::number( entry.zmax ) );
+}
+
+QString QfBasemapService::creationUri( const QString &id ) const
+{
+  for ( const Entry &entry : mCatalog )
+  {
+    if ( entry.id == id )
+    {
+      return entryUri( entry );
+    }
+  }
+  return QString();
+}
+
 void QfBasemapService::addEntryLayer( const QString &id )
 {
   if ( QgsProject::instance() == nullptr )
@@ -393,14 +422,11 @@ void QfBasemapService::addEntryLayer( const QString &id )
     return;
   }
 
-  QString url = entry->url;
-  if ( !url.startsWith( QLatin1String( "http" ) ) )
+  const QString uri = entryUri( *entry );
+  if ( uri.isEmpty() )
   {
-    url = mServerUrl + '/' + url;
+    return;
   }
-
-  const QString uri = QStringLiteral( "type=xyz&url=%1&zmin=0&zmax=%2" )
-                        .arg( QString::fromLatin1( QUrl::toPercentEncoding( url ) ), QString::number( entry->zmax ) );
 
   QgsRasterLayer *layer = new QgsRasterLayer( uri, entry->name, QStringLiteral( "wms" ) );
   if ( !layer->isValid() )

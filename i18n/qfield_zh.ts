@@ -7693,6 +7693,22 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
         <source>My Project</source>
         <translation>我的工程</translation>
     </message>
+    <message>
+        <source>Tianditu vector</source>
+        <translation>天地图矢量底图</translation>
+    </message>
+    <message>
+        <source>Tianditu imagery</source>
+        <translation>天地图影像底图</translation>
+    </message>
+    <message>
+        <source>Jilin-1 satellite</source>
+        <translation>吉林一号卫星影像</translation>
+    </message>
+    <message>
+        <source>Connect the map service in Settings &gt; Basemaps to pick an online basemap here.</source>
+        <translation>请先在「设置 → 底图」中连接地图服务，这里才能选择在线底图。</translation>
+    </message>
 </context>
 <context>
     <name>QfProjectUtils</name>

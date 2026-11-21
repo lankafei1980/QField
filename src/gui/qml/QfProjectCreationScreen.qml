@@ -305,6 +305,110 @@ Page {
                 }
               }
             }
+            QfProjectThumbnail {
+              visible: QfBasemapService.creationUri("tianditu-vec") !== ""
+              width: visible ? 150 : 0
+              implicitHeight: 95
+              radius: 4
+              bgColor: QfTheme.groupBoxSurfaceColor
+              previewImageSource: ""
+              projectTitle.text: qsTr("Tianditu vector")
+              showType: false
+              selected: basemapProviders.currentItem === this
+              fillHeight: true
+              showCustomizeIcon: false
+
+              property Component settings: Component {
+                Item {
+                  property string name: "custom"
+                  property string customSource: QfBasemapService.creationUri("tianditu-vec")
+                  property string customProvider: "wms"
+                }
+              }
+
+              MouseArea {
+                anchors.fill: parent
+                onPressed: parent.isPressed = true
+                onReleased: parent.isPressed = false
+                onCanceled: parent.isPressed = false
+                onClicked: {
+                  Qt.inputMethod.hide();
+                  basemapProviders.currentIndex = parent.ObjectModel.index;
+                }
+              }
+            }
+            QfProjectThumbnail {
+              visible: QfBasemapService.creationUri("tianditu-img") !== ""
+              width: visible ? 150 : 0
+              implicitHeight: 95
+              radius: 4
+              bgColor: QfTheme.groupBoxSurfaceColor
+              previewImageSource: ""
+              projectTitle.text: qsTr("Tianditu imagery")
+              showType: false
+              selected: basemapProviders.currentItem === this
+              fillHeight: true
+              showCustomizeIcon: false
+
+              property Component settings: Component {
+                Item {
+                  property string name: "custom"
+                  property string customSource: QfBasemapService.creationUri("tianditu-img")
+                  property string customProvider: "wms"
+                }
+              }
+
+              MouseArea {
+                anchors.fill: parent
+                onPressed: parent.isPressed = true
+                onReleased: parent.isPressed = false
+                onCanceled: parent.isPressed = false
+                onClicked: {
+                  Qt.inputMethod.hide();
+                  basemapProviders.currentIndex = parent.ObjectModel.index;
+                }
+              }
+            }
+            QfProjectThumbnail {
+              width: 150
+              implicitHeight: 95
+              radius: 4
+              bgColor: QfTheme.groupBoxSurfaceColor
+              previewImageSource: ""
+              projectTitle.text: qsTr("Jilin-1 satellite")
+              showType: false
+              selected: basemapProviders.currentItem === this
+              fillHeight: true
+              showCustomizeIcon: false
+
+              property Component settings: Component {
+                Item {
+                  property string name: "custom"
+                  property string customSource: QfBasemapService.creationUri("jl1-img")
+                  property string customProvider: "wms"
+                }
+              }
+
+              MouseArea {
+                anchors.fill: parent
+                onPressed: parent.isPressed = true
+                onReleased: parent.isPressed = false
+                onCanceled: parent.isPressed = false
+                onClicked: {
+                  Qt.inputMethod.hide();
+                  basemapProviders.currentIndex = parent.ObjectModel.index;
+                }
+              }
+            }
+          }
+
+          Label {
+            visible: QfBasemapService.creationUri("tianditu-vec") === ""
+            width: parent.width
+            text: qsTr("Connect the map service in Settings > Basemaps to pick an online basemap here.")
+            font: QfTheme.tipFont
+            color: QfTheme.secondaryTextColor
+            wrapMode: Text.WordWrap
           }
 
           Loader {
