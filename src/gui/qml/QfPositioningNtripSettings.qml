@@ -490,33 +490,54 @@ QfPopup {
   }
 
   /**
-   * Parses the order / SMS text that Chinese CORS providers send and fills the
-   * form. Handles both full width and ASCII colons, "或"-separated hosts and
-   * ports annotated with their coordinate frame (prefers CGCS2000).
+   * Parses the order message of a CORS provider.
+   *
+   * Formats differ from one reseller to the next, so the parser does not rely
+   * on a fixed layout: it looks for the usual keywords with an optional
+   * separator (账号/帐号/用户名, 密码/口令, IP/域名/地址, 端口, 接入点/挂载点)
+   * and falls back to scanning the text for an IPv4 address, an RTCM mount
+   * point and ports annotated with their coordinate frame.
    */
   function parseAccountText(text) {
-    const normalized = (text || "").replace(/：/g, ":").replace(/\r/g, "");
+    const normalized = (text || "")
+      .replace(/：/g, ":")
+      .replace(/[（）]/g, (c) => (c === "（" ? "(" : ")"));
 
     const pick = (pattern) => {
       const match = normalized.match(pattern);
       return match ? match[1].trim() : "";
     };
 
-    const account = pick(/账号\s*[:=]\s*([^\s,;，；]+)/) || pick(/用户名\s*[:=]\s*([^\s,;，；]+)/);
-    const password = pick(/密码\s*[:=]\s*([^\s,;，；]+)/);
-    const host = pick(/(?:IP|域名|地址|主机|服务器)\s*[:=]\s*([^\s,;，；或]+)/i);
-    const mountPoint = pick(/(?:接入点|挂载点|mount\s*point|mountpoint|源节点)\s*[:=]\s*([A-Za-z0-9_\-]+)/i);
+    const account = pick(/(?:账号|帐号|账户|用户名|用户|account|user(?:name)?)\s*[:=]?\s*([\w@.\-]{3,})/i);
+    const password = pick(/(?:密码|口令|password|passwd|pwd|pass)\s*[:=]?\s*([\w@.\-!$%^&*]{3,})/i);
+
+    // Host: a keyword followed by an IPv4 address or a host name, else the first
+    // IPv4 address anywhere in the text ("A 或 B" keeps the first one)
+    let host = pick(/(?:IP|地址|域名|主机|服务器|server|host)\s*[:=]?\s*([0-9]{1,3}(?:\.[0-9]{1,3}){3}|[a-z0-9.\-]+\.[a-z]{2,})/i);
+    if (!host) {
+      host = pick(/([0-9]{1,3}(?:\.[0-9]{1,3}){3})/);
+    }
+
+    // Mount point: keyword first, then the first RTCM/AUTO looking token
+    let mountPoint = pick(/(?:接入点|挂载点|源节点|挂载|mount[\s_]*point|mountpoint|stream)\s*[:=]?\s*([A-Za-z0-9_\-]{2,})/i);
+    if (!mountPoint) {
+      mountPoint = pick(/(?:RTCM\d{2}_[A-Za-z0-9]+|AUTO|VRS\w*)/);
+    }
 
     // Port: several ports can be listed, each annotated with its coordinate
     // frame ("8001（CGCS2000坐标系）；8002（WGS84坐标系）"). Prefer CGCS2000.
     let port = "";
     let portFallback = "";
+    let portAny = "";
     const portSegments = normalized.split(/端口|port/i);
     for (let i = 1; i < portSegments.length; i++) {
       const segment = portSegments[i];
       const number = segment.match(/^[\s:=]*?(\d{4,5})/);
       if (!number) {
         continue;
+      }
+      if (!portAny) {
+        portAny = number[1];
       }
       const context = segment.slice(0, 60);
       if (/CGCS2000/i.test(context)) {
@@ -528,7 +549,7 @@ QfPopup {
       }
     }
     if (!port) {
-      port = portFallback || pick(/端口\s*[:=]\s*(\d{4,5})/);
+      port = portFallback || portAny || pick(/端口\s*[:=]?\s*(\d{4,5})/);
     }
 
     let providerIndex = 0;
