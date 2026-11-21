@@ -9,6 +9,9 @@ on:
     branches:
       - rtk-cn
 
+permissions:
+  contents: write
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -190,3 +193,35 @@ jobs:
           name: rtkapp-arm64
           path: /tmp/apk/*.apk
           if-no-files-found: error
+
+      - name: 🏷️ Publish release for this build
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          SLUG="$(echo "${APP_VERSION#v}-cn${APK_VERSION_CODE}" | tr ' /' '--')"
+          mkdir -p /tmp/release
+          APK="/tmp/release/rtkapp-${SLUG}-build${GITHUB_RUN_NUMBER}-arm64-debug.apk"
+          cp /tmp/apk/android-build-debug.apk "${APK}"
+          cp /tmp/apk/android-build-debug.apk /tmp/release/rtkapp-latest-arm64-debug.apk
+          NOTES="自动构建 #${GITHUB_RUN_NUMBER}，提交 ${GITHUB_SHA:0:7}"$'\n\n'"中英文名、中文翻译、千寻 NTRIP、底图服务均已编入；debug 签名，可直接侧载。"
+
+          # one release per successful build, so every build is downloadable
+          # (a re-run reuses the run number, hence the upsert)
+          if gh release view "build-${GITHUB_RUN_NUMBER}" >/dev/null 2>&1; then
+            gh release upload "build-${GITHUB_RUN_NUMBER}" "${APK}" --clobber
+          else
+            gh release create "build-${GITHUB_RUN_NUMBER}" "${APK}" \
+              --title "构建 #${GITHUB_RUN_NUMBER} · ${APP_VERSION_STR}" \
+              --notes "${NOTES}" --prerelease
+          fi
+
+          # and a rolling release with a stable download URL
+          if gh release view latest-cn >/dev/null 2>&1; then
+            gh release upload latest-cn /tmp/release/rtkapp-latest-arm64-debug.apk --clobber
+            gh release edit latest-cn --notes "${NOTES}"
+          else
+            gh release create latest-cn /tmp/release/rtkapp-latest-arm64-debug.apk \
+              --title "最新构建 · RTK 外业助手" --notes "${NOTES}" --prerelease
+          fi
