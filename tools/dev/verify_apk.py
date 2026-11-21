@@ -28,6 +28,11 @@ MARKERS = {
     "english translation resource": "qfield_en.qm",
     "i18n resource prefix": ":/i18n",
     "ntrip reconnect log": "NTRIP client: reconnecting in",
+    "basemap service": "qfieldBasemapId",
+    "tianditu proxy": "basemap/DataServer",
+    "jilin-1 tiles": "jl1/getMap",
+    "orthophoto tiles": "titiler/cog/tiles",
+    "private CA resource": "newgis-ca.pem",
 }
 
 # Translated strings live inside the zlib compressed .qm resources, so they
