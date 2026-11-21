@@ -81,12 +81,14 @@ QfPopup {
           popup.topMargin: mainWindow.sceneTopMargin
           popup.bottomMargin: mainWindow.sceneTopMargin
 
-          model: [qsTr("Custom"), qsTr("Qianxun FindCM")]
+          model: [qsTr("Custom"), qsTr("Qianxun FindCM"), qsTr("China Mobile CORS")]
           currentIndex: 0
 
           onActivated: index => {
             if (index === 1) {
               popup.applyQianxunPreset();
+            } else if (index === 2) {
+              popup.applyMobilePreset();
             }
           }
         }
@@ -98,6 +100,48 @@ QfPopup {
           color: QfTheme.secondaryTextColor
           wrapMode: Text.WordWrap
           Layout.fillWidth: true
+        }
+
+        Label {
+          visible: ntripProviderComboBox.currentIndex === 2
+          text: qsTr("China Mobile: port 8001 = CGCS2000, 8002 = WGS84. Mount point RTCM33_GRCEJ is the most precise one; use the host and credentials from your order message.")
+          font: QfTheme.tipFont
+          color: QfTheme.secondaryTextColor
+          wrapMode: Text.WordWrap
+          Layout.fillWidth: true
+        }
+
+        Label {
+          Layout.fillWidth: true
+          text: qsTr("Paste the account message from your CORS provider and everything below is filled in automatically.")
+          font: QfTheme.tipFont
+          color: QfTheme.secondaryTextColor
+          wrapMode: Text.WordWrap
+        }
+
+        TextArea {
+          id: pasteArea
+          Layout.fillWidth: true
+          Layout.preferredHeight: 84
+          font: QfTheme.defaultFont
+          color: QfTheme.mainTextColor
+          wrapMode: TextEdit.Wrap
+          placeholderText: qsTr("e.g. 账号：xxx 密码：xxx IP：1.2.3.4 端口：8001（CGCS2000坐标系） 接入点：RTCM33_GRCEJ")
+        }
+
+        QfButton {
+          Layout.fillWidth: true
+          text: qsTr("Fill in from the pasted text")
+          onClicked: popup.parseAccountText(pasteArea.text)
+        }
+
+        Label {
+          id: parseFeedback
+          Layout.fillWidth: true
+          visible: text !== ""
+          font: QfTheme.tipFont
+          color: QfTheme.secondaryTextColor
+          wrapMode: Text.WordWrap
         }
 
         GridLayout {
@@ -435,6 +479,103 @@ QfPopup {
     ntripMountPointComboBox.editText = "AUTO";
     ntripForwardNmeaSentencesSwitch.checked = true;
     ntripProviderComboBox.currentIndex = 1;
+  }
+
+  function applyMobilePreset() {
+    ntripHostTextField.text = "120.253.239.161";
+    ntripPortTextField.text = "8001";
+    ntripMountPointComboBox.editText = "RTCM33_GRCEJ";
+    ntripForwardNmeaSentencesSwitch.checked = true;
+    ntripProviderComboBox.currentIndex = 2;
+  }
+
+  /**
+   * Parses the order / SMS text that Chinese CORS providers send and fills the
+   * form. Handles both full width and ASCII colons, "或"-separated hosts and
+   * ports annotated with their coordinate frame (prefers CGCS2000).
+   */
+  function parseAccountText(text) {
+    const normalized = (text || "").replace(/：/g, ":").replace(/\r/g, "");
+
+    const pick = (pattern) => {
+      const match = normalized.match(pattern);
+      return match ? match[1].trim() : "";
+    };
+
+    const account = pick(/账号\s*[:=]\s*([^\s,;，；]+)/) || pick(/用户名\s*[:=]\s*([^\s,;，；]+)/);
+    const password = pick(/密码\s*[:=]\s*([^\s,;，；]+)/);
+    const host = pick(/(?:IP|域名|地址|主机|服务器)\s*[:=]\s*([^\s,;，；或]+)/i);
+    const mountPoint = pick(/(?:接入点|挂载点|mount\s*point|mountpoint|源节点)\s*[:=]\s*([A-Za-z0-9_\-]+)/i);
+
+    // Port: several ports can be listed, each annotated with its coordinate
+    // frame ("8001（CGCS2000坐标系）；8002（WGS84坐标系）"). Prefer CGCS2000.
+    let port = "";
+    let portFallback = "";
+    const portSegments = normalized.split(/端口|port/i);
+    for (let i = 1; i < portSegments.length; i++) {
+      const segment = portSegments[i];
+      const number = segment.match(/^[\s:=]*?(\d{4,5})/);
+      if (!number) {
+        continue;
+      }
+      const context = segment.slice(0, 60);
+      if (/CGCS2000/i.test(context)) {
+        port = number[1];
+        break;
+      }
+      if (!portFallback && /WGS84|ITRF|CGCS/i.test(context)) {
+        portFallback = number[1];
+      }
+    }
+    if (!port) {
+      port = portFallback || pick(/端口\s*[:=]\s*(\d{4,5})/);
+    }
+
+    let providerIndex = 0;
+    if (/千寻|FindCM|知寸/i.test(normalized)) {
+      providerIndex = 1;
+    } else if (/移动|CMCC/i.test(normalized)) {
+      providerIndex = 2;
+    }
+
+    if (providerIndex === 1) {
+      popup.applyQianxunPreset();
+    } else if (providerIndex === 2) {
+      popup.applyMobilePreset();
+    }
+
+    if (account) {
+      ntripUsernameTextField.text = account;
+    }
+    if (password) {
+      ntripPasswordTextField.text = password;
+    }
+    if (host) {
+      ntripHostTextField.text = host;
+    }
+    if (port) {
+      ntripPortTextField.text = port;
+    }
+    if (mountPoint) {
+      ntripMountPointComboBox.editText = mountPoint;
+    }
+    if (account || password || host || port || mountPoint) {
+      ntripForwardNmeaSentencesSwitch.checked = true;
+    }
+
+    let details = [];
+    if (account) {
+      details.push(qsTr("account %1").arg(account));
+    }
+    if (mountPoint) {
+      details.push(qsTr("mount point %1").arg(mountPoint));
+    }
+    if (port) {
+      details.push(qsTr("port %1").arg(port));
+    }
+    parseFeedback.text = details.length > 0
+      ? qsTr("Filled in: %1").arg(details.join(", "))
+      : qsTr("No recognizable field found in the pasted text.");
   }
 
   function createSettingsMap() {

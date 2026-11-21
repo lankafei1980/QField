@@ -23,9 +23,9 @@ env:
   APP_PACKAGE_PREFIX: cn.zpyzs
   APP_PACKAGE_NAME: rtkapp
   APP_VERSION: v4.3.8
-  APP_VERSION_STR: 4.3.8 - 中文版 CN4
+  APP_VERSION_STR: 4.3.8 - 中文版 CN5
   APP_DEFAULT_LANGUAGE: zh
-  APK_VERSION_CODE: 4
+  APK_VERSION_CODE: 5
 
 jobs:
   build:

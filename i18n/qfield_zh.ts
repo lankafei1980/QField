@@ -7405,6 +7405,46 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
         <source>Custom</source>
         <translation>自定义</translation>
     </message>
+    <message>
+        <source>China Mobile CORS</source>
+        <translation>中国移动 CORS</translation>
+    </message>
+    <message>
+        <source>China Mobile: port 8001 = CGCS2000, 8002 = WGS84. Mount point RTCM33_GRCEJ is the most precise one; use the host and credentials from your order message.</source>
+        <translation>中国移动：端口 8001 对应 CGCS2000，8002 对应 WGS84；接入点 RTCM33_GRCEJ（五星十六频）精度最高。地址与账号以开通短信为准。</translation>
+    </message>
+    <message>
+        <source>Paste the account message from your CORS provider and everything below is filled in automatically.</source>
+        <translation>把运营商发来的开通短信整段粘贴到这里，下面的账号、密码、地址、端口、挂载点会自动填好。</translation>
+    </message>
+    <message>
+        <source>e.g. 账号：xxx 密码：xxx IP：1.2.3.4 端口：8001（CGCS2000坐标系） 接入点：RTCM33_GRCEJ</source>
+        <translation>例如：账号：xxx 密码：xxx IP：1.2.3.4 端口：8001（CGCS2000坐标系） 接入点：RTCM33_GRCEJ</translation>
+    </message>
+    <message>
+        <source>Fill in from the pasted text</source>
+        <translation>自动填写</translation>
+    </message>
+    <message>
+        <source>account %1</source>
+        <translation>账号 %1</translation>
+    </message>
+    <message>
+        <source>mount point %1</source>
+        <translation>挂载点 %1</translation>
+    </message>
+    <message>
+        <source>port %1</source>
+        <translation>端口 %1</translation>
+    </message>
+    <message>
+        <source>Filled in: %1</source>
+        <translation>已填写：%1</translation>
+    </message>
+    <message>
+        <source>No recognizable field found in the pasted text.</source>
+        <translation>没有从粘贴内容里识别到可用字段。</translation>
+    </message>
 </context>
 <context>
     <name>QfPositioningPreciseView</name>
