@@ -100,6 +100,7 @@ jobs:
           path: ~/.cache/vcpkg/archives
           key: vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-${{ github.run_id }}
           restore-keys: |
+            vcpkg-Linux-arm64-android-44897478561
             vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-
 
       - name: 💾 Restore vcpkg downloads
@@ -165,15 +166,23 @@ jobs:
           echo "configure failed after 5 attempts"
           exit 1
 
-      - name: 💾 Save vcpkg binary artifacts
+      - name: 📏 Measure the vcpkg caches
+        id: cachesize
         if: always()
+        run: |
+          A=$(du -sm ~/.cache/vcpkg/archives 2>/dev/null | cut -f1); echo "archives=${A:-0}" >> "$GITHUB_OUTPUT"
+          D=$(du -sm /home/runner/vcpkg-downloads 2>/dev/null | cut -f1); echo "downloads=${D:-0}" >> "$GITHUB_OUTPUT"
+          echo "archives ${A:-0} MB, downloads ${D:-0} MB"
+
+      - name: 💾 Save vcpkg binary artifacts
+        if: always() && fromJSON(steps.cachesize.outputs.archives) > 200
         uses: actions/cache/save@v4
         with:
           path: ~/.cache/vcpkg/archives
           key: vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-${{ github.run_id }}
 
       - name: 💾 Save vcpkg downloads
-        if: always()
+        if: always() && fromJSON(steps.cachesize.outputs.downloads) > 10
         uses: actions/cache/save@v4
         with:
           path: /home/runner/vcpkg-downloads
