@@ -40,26 +40,23 @@
 #include <Spix/QtQmlBot.h>
 #endif
 
+#include <QAbstractNetworkCache>
 #include <QApplication>
 #include <QDialog>
 #include <QDir>
 #include <QEventLoop>
+#include <QFile>
 #include <QLabel>
 #include <QLocale>
 #include <QMainWindow>
 #include <QSettings>
-#include <QStandardPaths>
-#include <QTranslator>
-#include <QtWebView/QtWebView>
-
-#if defined( Q_OS_IOS )
-#include <QAbstractNetworkCache>
-#include <QFile>
 #include <QSslCertificate>
 #include <QSslConfiguration>
 #include <QSslSocket>
+#include <QStandardPaths>
+#include <QTranslator>
+#include <QtWebView/QtWebView>
 #include <qgsnetworkaccessmanager.h>
-#endif
 
 #include <proj.h>
 
