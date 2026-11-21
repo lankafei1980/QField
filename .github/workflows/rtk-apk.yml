@@ -76,15 +76,24 @@ jobs:
             libxkbcommon-x11-dev autoconf-archive libgstreamer-gl1.0-0 \
             libgstreamer-plugins-base1.0-0 libfuse2 libcups2-dev nasm libltdl-dev
 
+      # NOTE: actions/cache derives an internal version hash from the cached
+      # paths, so each cache must keep a stable path list. Archives and
+      # downloads therefore live in two separate caches.
       - name: 💾 Restore vcpkg binary artifacts
         uses: actions/cache/restore@v4
         with:
-          path: |
-            ~/.cache/vcpkg/archives
-            /home/runner/vcpkg-downloads
+          path: ~/.cache/vcpkg/archives
           key: vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-${{ github.run_id }}
           restore-keys: |
             vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-
+
+      - name: 💾 Restore vcpkg downloads
+        uses: actions/cache/restore@v4
+        with:
+          path: /home/runner/vcpkg-downloads
+          key: vcpkg-downloads-${{ runner.os }}-${{ env.TRIPLET }}-${{ github.run_id }}
+          restore-keys: |
+            vcpkg-downloads-${{ runner.os }}-${{ env.TRIPLET }}-
 
       - name: 🗝️ Export the GitHub Actions cache variables for vcpkg
         uses: actions/github-script@v7
@@ -145,10 +154,15 @@ jobs:
         if: always()
         uses: actions/cache/save@v4
         with:
-          path: |
-            ~/.cache/vcpkg/archives
-            /home/runner/vcpkg-downloads
+          path: ~/.cache/vcpkg/archives
           key: vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-${{ github.run_id }}
+
+      - name: 💾 Save vcpkg downloads
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: /home/runner/vcpkg-downloads
+          key: vcpkg-downloads-${{ runner.os }}-${{ env.TRIPLET }}-${{ github.run_id }}
 
       - name: 📑 Upload configure logs on failure
         uses: actions/upload-artifact@v7
