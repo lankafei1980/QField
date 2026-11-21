@@ -1,0 +1,171 @@
+---
+name: 🤖 RTK APK
+
+# Builds the Chinese branded "RTK 外业助手" Android package (arm64) without any
+# signing secret: the resulting debug APK can be side-loaded directly.
+on:
+  workflow_dispatch:
+  push:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TRIPLET: arm64-android
+  APP_NAME: RTKApp
+  APP_DISPLAY_NAME: RTK 外业助手
+  APP_PACKAGE_PREFIX: cn.zpyzs
+  APP_PACKAGE_NAME: rtkapp
+  APP_VERSION: v4.3.8
+  APP_VERSION_STR: 4.3.8 - 中文版 CN1
+  APP_DEFAULT_LANGUAGE: zh
+  APK_VERSION_CODE: 1
+
+jobs:
+  build:
+    name: build arm64 apk
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    steps:
+      - name: 🐣 Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: 🌾 Prepare variables
+        shell: bash
+        run: |
+          NDK_VERSION=29.0.14206865
+          echo "JAVA_HOME=${JAVA_HOME_17_X64}" >> $GITHUB_ENV
+          echo "ANDROID_BUILD_TOOLS_VERSION=35.0.1" >> $GITHUB_ENV
+          echo "ANDROID_NDK_VERSION=${NDK_VERSION}" >> $GITHUB_ENV
+          echo "ANDROID_NDK=/usr/local/lib/android/sdk/ndk/${NDK_VERSION}" >> $GITHUB_ENV
+          echo "ANDROID_NDK_HOME=/usr/local/lib/android/sdk/ndk/${NDK_VERSION}" >> $GITHUB_ENV
+          echo "ANDROID_NDK_ROOT=/usr/local/lib/android/sdk/ndk/${NDK_VERSION}" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "ndk.dir=/usr/local/lib/android/sdk/ndk/${NDK_VERSION}" >> local.properties
+          echo "CMAKE_BUILD_DIR=${GITHUB_WORKSPACE}/builddir" >> $GITHUB_ENV
+
+      - name: ♻️ Check disk space
+        run: df . -h
+
+      - name: 🧹 Reclaim disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          df . -h
+
+      - name: 🐩 Install CMake and Ninja
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: 3.29.0
+
+      - name: 🔨 Prepare build env
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gperf autopoint '^libxcb.*-dev' libxrandr-dev libx11-xcb-dev libsm-dev \
+            libegl1-mesa-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev \
+            libxkbcommon-x11-dev autoconf-archive libgstreamer-gl1.0-0 \
+            libgstreamer-plugins-base1.0-0 libfuse2 libcups2-dev nasm libltdl-dev
+
+      - name: 💾 Restore vcpkg binary artifacts
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cache/vcpkg/archives
+            /home/runner/vcpkg-downloads
+          key: vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-${{ github.run_id }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-
+
+      - name: 🗝️ Export the GitHub Actions cache variables for vcpkg
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - name: 🌱 Configure
+        env:
+          WORKSPACE: ${{ github.workspace }}
+          # Push every finished port to the Actions cache immediately: a job
+          # that dies on a transient download still hands its work to the next
+          # run instead of losing three hours of compilation.
+          VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite;files,/home/runner/.cache/vcpkg/archives,readwrite"
+          # Keep the downloaded sources / patches across runs: github.com
+          # occasionally answers 503 on the commit patch URLs vcpkg uses, and a
+          # cached distfile can never fail that way
+          VCPKG_DOWNLOADS: /home/runner/vcpkg-downloads
+        run: |
+          # vcpkg downloads port patches straight from github.com, which
+          # occasionally answers 503; retry the configure step instead of
+          # losing a whole build
+          for attempt in 1 2 3 4 5; do
+            echo "::group::configure attempt ${attempt}"
+            if cmake -S "${{ github.workspace }}" \
+                  -B "${CMAKE_BUILD_DIR}" \
+                  -G Ninja \
+                  -D CMAKE_MAKE_PROGRAM="$(command -v ninja)" \
+                  -D CMAKE_BUILD_TYPE=Release \
+                  -D ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT} \
+                  -D ANDROID_NDK_VERSION="${ANDROID_NDK_VERSION}" \
+                  -D ANDROID_BUILD_TOOLS_VERSION="${ANDROID_BUILD_TOOLS_VERSION}" \
+                  -D VCPKG_TARGET_TRIPLET="${TRIPLET}" \
+                  -D VCPKG_HOST_TRIPLET="x64-linux" \
+                  -D VCPKG_INSTALL_OPTIONS="--allow-unsupported;--x-abi-tools-use-exact-versions" \
+                  -D WITH_SPIX=OFF \
+                  -D APP_VERSION="${APP_VERSION}" \
+                  -D APK_VERSION_CODE="${APK_VERSION_CODE}" \
+                  -D APP_VERSION_STR="${APP_VERSION_STR}" \
+                  -D APP_PACKAGE_PREFIX="${APP_PACKAGE_PREFIX}" \
+                  -D APP_PACKAGE_NAME="${APP_PACKAGE_NAME}" \
+                  -D APP_NAME="${APP_NAME}" \
+                  -D APP_DISPLAY_NAME="${APP_DISPLAY_NAME}" \
+                  -D APP_DEFAULT_LANGUAGE="${APP_DEFAULT_LANGUAGE}"; then
+              echo "::endgroup::"
+              exit 0
+            fi
+            echo "::endgroup::"
+            wait=$((attempt * 60))
+            echo "configure attempt ${attempt} failed, retrying in ${wait} s"
+            sleep ${wait}
+          done
+          echo "configure failed after 5 attempts"
+          exit 1
+
+      - name: 💾 Save vcpkg binary artifacts
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cache/vcpkg/archives
+            /home/runner/vcpkg-downloads
+          key: vcpkg-${{ runner.os }}-${{ env.TRIPLET }}-${{ github.run_id }}
+
+      - name: 📑 Upload configure logs on failure
+        uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: build-logs
+          path: |
+            ${{ env.CMAKE_BUILD_DIR }}/**/*.log
+
+      - name: 🌋 Build
+        run: cmake --build "${CMAKE_BUILD_DIR}" --config Release
+
+      - name: 📦 Package (debug signed APK)
+        run: cmake --build "${CMAKE_BUILD_DIR}" --target bundle --config Release
+
+      - name: 🗂️ Collect APK
+        run: |
+          mkdir -p /tmp/apk
+          find "${CMAKE_BUILD_DIR}/src/app/android-build/build/outputs" -name '*.apk' -print -exec cp {} /tmp/apk/ \;
+          ls -la /tmp/apk
+
+      - name: 📦 Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: rtkapp-arm64
+          path: /tmp/apk/*.apk
+          if-no-files-found: error
