@@ -58,6 +58,11 @@ jobs:
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
           df . -h
 
+      - name: 📁 Prepare vcpkg cache directories
+        # VCPKG_DOWNLOADS must already exist, and actions/cache refuses to save
+        # a cache whose paths are missing
+        run: mkdir -p ~/.cache/vcpkg/archives /home/runner/vcpkg-downloads
+
       - name: 🐩 Install CMake and Ninja
         uses: lukka/get-cmake@latest
         with:
