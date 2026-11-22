@@ -3774,6 +3774,50 @@ Cancel to make a minimal device scan instead.</source>
         <source>Basemaps</source>
         <translation>底图</translation>
     </message>
+    <message>
+        <source>Point capture accuracy and averaging requirements are configured in the "GNSS capture quality control" group below.</source>
+        <translation>测点的精度与采样要求在下方的「GNSS采集质控」分组中设置。</translation>
+    </message>
+    <message>
+        <source>This value will correct the Z values recorded from the positioning device. If a value of 1.6 is entered, the system will automatically subtract 1.6 from each recorded value. Make sure to insert the effective antenna height, i.e. pole length + antenna phase center offset. The pole height is stored per project and can be edited from the main screen status card; this value is only used as the default for new projects.</source>
+        <translation>该值用于把定位设备记录的高程换算到地面点：填 1.600 时，系统会从每个记录值中减去 1.600。请填写有效天线高，即对中杆长度 + 天线相位中心偏移。杆高按工程单独保存，可在主屏右侧状态卡中修改；此处的值仅作为新建工程的默认杆高。</translation>
+    </message>
+    <message>
+        <source>GNSS capture quality control</source>
+        <translation>GNSS采集质控</translation>
+    </message>
+    <message>
+        <source>Require fixed solution</source>
+        <translation>采集必须为固定解</translation>
+    </message>
+    <message>
+        <source>Horizontal accuracy limit (HRMS)</source>
+        <translation>平面精度限值（HRMS）</translation>
+    </message>
+    <message>
+        <source>Vertical accuracy limit (VRMS)</source>
+        <translation>高程精度限值（VRMS）</translation>
+    </message>
+    <message>
+        <source>Sampling timeout</source>
+        <translation>采样超时时间</translation>
+    </message>
+    <message>
+        <source>s</source>
+        <translation>秒</translation>
+    </message>
+    <message>
+        <source>Sampling count (times)</source>
+        <translation>采样平均次数（次）</translation>
+    </message>
+    <message>
+        <source>These limits apply to point capture; a limit of 0 disables that check. The accuracy indicator thresholds above only affect the map badge and vertex digitizing.</source>
+        <translation>这些限值用于点要素测点采集，填 0 表示不限制；上方的精度指示器阈值只影响地图徽标与线/面顶点采集。</translation>
+    </message>
+    <message>
+        <source>Allow forced capture (emergency)</source>
+        <translation>允许强制采集（应急）</translation>
+    </message>
 </context>
 <context>
     <name>QfAttributeFormModelBase</name>
@@ -4751,6 +4795,18 @@ While you can still view and use the project, it is strongly recommended to rese
         <source>%n deletion(s)</source>
         <translation><numerusform>%n个删除</numerusform></translation>
     </message>
+    <message>
+        <source>Uploading %1%</source>
+        <translation>正在上传 %1%</translation>
+    </message>
+    <message>
+        <source>Uploading</source>
+        <translation>正在上传</translation>
+    </message>
+    <message>
+        <source>Connecting...</source>
+        <translation>正在连接…</translation>
+    </message>
 </context>
 <context>
     <name>QfCloudProject</name>
@@ -5454,6 +5510,34 @@ While you can still view and use the project, it is strongly recommended to rese
     <message>
         <source>Position accuracy doesn&apos;t meet the minimum requirement, vertex not added</source>
         <translation>位置精度未达到最低要求，不能添加顶点</translation>
+    </message>
+    <message>
+        <source>Sampling timed out, %1 valid samples collected. Do you want to save the point with the collected samples?</source>
+        <translation>采样超时，已采集 %1 个合格点。是否用已采集的数据强制保存？</translation>
+    </message>
+    <message>
+        <source>%1 Do you want to force the capture?</source>
+        <translation>%1 是否强制采集？</translation>
+    </message>
+    <message>
+        <source>Go to settings</source>
+        <translation>去设置</translation>
+    </message>
+    <message>
+        <source>Forced capture</source>
+        <translation>强制采集</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <source>Force capture</source>
+        <translation>强制采集</translation>
+    </message>
+    <message>
+        <source>No positioning, unable to capture</source>
+        <translation>无定位，无法测点</translation>
     </message>
 </context>
 <context>
@@ -6703,6 +6787,18 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
         <source>You are about to remove a saved WebDAV item, proceed?</source>
         <translation>将移除已保存的WebDAV项，是否继续？</translation>
     </message>
+    <message>
+        <source>Upload folder to WebDAV</source>
+        <translation>上传文件夹到 WebDAV</translation>
+    </message>
+    <message>
+        <source>Upload file to WebDAV</source>
+        <translation>上传文件到 WebDAV</translation>
+    </message>
+    <message>
+        <source>Download folder from WebDAV</source>
+        <translation>从 WebDAV 下载文件夹</translation>
+    </message>
 </context>
 <context>
     <name>QfLocalFilesModel</name>
@@ -7213,6 +7309,10 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
     <message>
         <source>Installing %1</source>
         <translation>正在安装 %1</translation>
+    </message>
+    <message>
+        <source>Plugin installation failed: </source>
+        <translation>插件安装失败：</translation>
     </message>
 </context>
 <context>
@@ -9375,11 +9475,11 @@ to show actions</source>
     </message>
     <message>
         <source>Float RTK</source>
-        <translation>浮点解RTK</translation>
+        <translation>浮点解</translation>
     </message>
     <message>
         <source>Fixed RTK</source>
-        <translation>固定解RTK</translation>
+        <translation>固定解</translation>
     </message>
     <message>
         <source>PPS</source>
@@ -9387,15 +9487,15 @@ to show actions</source>
     </message>
     <message>
         <source>DGPS</source>
-        <translation>差分全球定位系统</translation>
+        <translation>差分解</translation>
     </message>
     <message>
         <source>Autonomous</source>
-        <translation>自动</translation>
+        <translation>单点解</translation>
     </message>
     <message>
         <source>Invalid</source>
-        <translation>无效</translation>
+        <translation>无定位</translation>
     </message>
     <message>
         <source>Unknown (%1)</source>
@@ -10751,4 +10851,295 @@ to show actions</source>
         <translation>正射影像</translation>
     </message>
 </context>
+  <context>
+    <name>QfRtkCapture</name>
+    <message>
+        <source>No positioning, unable to capture</source>
+        <translation>无定位，无法测点</translation>
+    </message>
+    <message>
+        <source>The positioning device does not support differential corrections, fixed solution unavailable</source>
+        <translation>当前定位设备不支持差分改正，无法固定解</translation>
+    </message>
+    <message>
+        <source>NTRIP corrections are disabled, fixed solution unavailable</source>
+        <translation>未启用差分服务，无法固定解</translation>
+    </message>
+    <message>
+        <source>No GNSS account or NTRIP service configured</source>
+        <translation>未配置 GNSS 账号或差分服务</translation>
+    </message>
+    <message>
+        <source>The differential service is not connected</source>
+        <translation>差分服务未连接</translation>
+    </message>
+    <message>
+        <source>The differential service is connecting</source>
+        <translation>差分服务正在连接</translation>
+    </message>
+    <message>
+        <source>Differential data interrupted, check account or network</source>
+        <translation>差分数据中断，请检查账号或网络</translation>
+    </message>
+    <message>
+        <source>Differential service connected but no fixed solution, check account, mount point or CRS</source>
+        <translation>差分已连接但未取得固定解，请检查账号权限、挂载点或坐标框架</translation>
+    </message>
+    <message>
+        <source>Fix status or accuracy out of limits, cannot capture</source>
+        <translation>解状态不合格或精度超限，无法采集</translation>
+    </message>
+    <message>
+        <source>Sampling timed out, capture failed</source>
+        <translation>采样超时，采集失败</translation>
+    </message>
+  </context>
+  <context>
+    <name>QfRtkCorrectionDialog</name>
+    <message>
+        <source>Please select a correction mode</source>
+        <translation>请选择校正模式</translation>
+    </message>
+    <message>
+        <source>Control point %1 is incomplete</source>
+        <translation>第 %1 个控制点坐标不完整</translation>
+    </message>
+    <message>
+        <source>At least one control point is required</source>
+        <translation>至少需要 1 个控制点</translation>
+    </message>
+    <message>
+        <source>At least two control points are required for a four parameter correction</source>
+        <translation>四参数校正至少需要 2 个控制点</translation>
+    </message>
+    <message>
+        <source>Control points overlap, unable to solve</source>
+        <translation>控制点重合，无法解算</translation>
+    </message>
+    <message>
+        <source>Unable to solve the correction parameters</source>
+        <translation>无法解算校正参数</translation>
+    </message>
+    <message>
+        <source>The project CRS is geographic, planar correction is unavailable</source>
+        <translation>当前工程为地理坐标系，无法使用平面校正</translation>
+    </message>
+    <message>
+        <source>Correction solved: %1 points, RMS %2 m</source>
+        <translation>解算完成：%1 个控制点，中误差 %2 m</translation>
+    </message>
+    <message>
+        <source>Reset correction parameters</source>
+        <translation>重置校正参数</translation>
+    </message>
+    <message>
+        <source>The solved correction parameters will be cleared. The pole height and the control points are kept.</source>
+        <translation>将清空已解算的校正参数；杆高与控制点保留不变。</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <source>Reset</source>
+        <translation>重置</translation>
+    </message>
+    <message>
+        <source>Correction parameters have been reset, pole height kept</source>
+        <translation>校正参数已重置，杆高保持不变</translation>
+    </message>
+    <message>
+        <source>RTK correction</source>
+        <translation>校正配置</translation>
+    </message>
+    <message>
+        <source>Pole height</source>
+        <translation>杆高</translation>
+    </message>
+    <message>
+        <source>m</source>
+        <translation>米</translation>
+    </message>
+    <message>
+        <source>The pole height is stored per project and applied to every measured point.</source>
+        <translation>杆高按工程保存，并应用到每个测点。</translation>
+    </message>
+    <message>
+        <source>Enable coordinate correction</source>
+        <translation>启用坐标校正</translation>
+    </message>
+    <message>
+        <source>Correction mode</source>
+        <translation>校正模式</translation>
+    </message>
+    <message>
+        <source>Single-point translation correction</source>
+        <translation>单点平移校正</translation>
+    </message>
+    <message>
+        <source>Multi-point four parameter correction</source>
+        <translation>多点四参数校正</translation>
+    </message>
+    <message>
+        <source>Elevation</source>
+        <translation>高程</translation>
+    </message>
+    <message>
+        <source>Elevation follows the planar correction</source>
+        <translation>高程跟随平面校正</translation>
+    </message>
+    <message>
+        <source>Independent elevation correction</source>
+        <translation>独立高程改正</translation>
+    </message>
+    <message>
+        <source>Elevation offset</source>
+        <translation>高程改正值</translation>
+    </message>
+    <message>
+        <source>Control points</source>
+        <translation>控制点</translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation>添加</translation>
+    </message>
+    <message>
+        <source>No control points yet. Add at least one for a single-point correction or two for a four parameter correction.</source>
+        <translation>还没有控制点。单点校正至少添加 1 个，四参数校正至少添加 2 个。</translation>
+    </message>
+    <message>
+        <source>Control point %1</source>
+        <translation>控制点 %1</translation>
+    </message>
+    <message>
+        <source>Known: %1, %2, %3</source>
+        <translation>已知：%1, %2, %3</translation>
+    </message>
+    <message>
+        <source>Measured: %1, %2, %3</source>
+        <translation>实测：%1, %2, %3</translation>
+    </message>
+    <message>
+        <source>Single-point correction: dX %1 m, dY %2 m, dH %3 m</source>
+        <translation>单点校正：dX %1 m，dY %2 m，dH %3 m</translation>
+    </message>
+    <message>
+        <source>Four parameter correction: %1 points, RMS %2 m, scale %3, rotation %4°</source>
+        <translation>四参数校正：%1 个点，中误差 %2 m，比例 %3，旋转 %4°</translation>
+    </message>
+    <message>
+        <source>No valid solution, solve again after editing the control points</source>
+        <translation>参数已失效，请修改控制点后重新解算</translation>
+    </message>
+    <message>
+        <source>Not solved yet</source>
+        <translation>尚未解算</translation>
+    </message>
+    <message>
+        <source>Start solving</source>
+        <translation>开始解算</translation>
+    </message>
+  </context>
+  <context>
+    <name>QfRtkControlPointDialog</name>
+    <message>
+        <source>Please fill in the known and measured X and Y coordinates</source>
+        <translation>请填写已知与实测的 X、Y 坐标</translation>
+    </message>
+    <message>
+        <source>Measured coordinates captured</source>
+        <translation>已采集实测坐标</translation>
+    </message>
+    <message>
+        <source>Control point</source>
+        <translation>控制点</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>名称</translation>
+    </message>
+    <message>
+        <source>Known coordinates (project CRS)</source>
+        <translation>已知坐标（工程坐标系）</translation>
+    </message>
+    <message>
+        <source>X</source>
+        <translation>X</translation>
+    </message>
+    <message>
+        <source>Y</source>
+        <translation>Y</translation>
+    </message>
+    <message>
+        <source>H</source>
+        <translation>H</translation>
+    </message>
+    <message>
+        <source>Measured coordinates (project CRS)</source>
+        <translation>实测坐标（工程坐标系）</translation>
+    </message>
+    <message>
+        <source>Capture current coordinates</source>
+        <translation>采集当前坐标</translation>
+    </message>
+    <message>
+        <source>The capture follows the GNSS capture quality control settings; the existing corrections are not applied.</source>
+        <translation>采集遵循系统级 GNSS 采集质控参数，不套用现有校正参数。</translation>
+    </message>
+  </context>
+  <context>
+    <name>QfRtkStatusCard</name>
+    <message>
+        <source>Single-point correction</source>
+        <translation>单点校正</translation>
+    </message>
+    <message>
+        <source>Multi-point correction</source>
+        <translation>多点校正</translation>
+    </message>
+    <message>
+        <source>Elevation correction</source>
+        <translation>高程改正</translation>
+    </message>
+    <message>
+        <source>No correction</source>
+        <translation>无校正</translation>
+    </message>
+    <message>
+        <source>Pole height: %1 m</source>
+        <translation>杆高：%1m</translation>
+    </message>
+  </context>
+  <context>
+    <name>QfGnssStatusLabel</name>
+    <message>
+        <source>Fixed solution</source>
+        <translation>固定解</translation>
+    </message>
+    <message>
+        <source>Float solution</source>
+        <translation>浮点解</translation>
+    </message>
+    <message>
+        <source>Differential solution</source>
+        <translation>差分解</translation>
+    </message>
+    <message>
+        <source>Single solution</source>
+        <translation>单点解</translation>
+    </message>
+    <message>
+        <source>Acquiring satellites</source>
+        <translation>搜星中</translation>
+    </message>
+    <message>
+        <source>Capturing</source>
+        <translation>采集中</translation>
+    </message>
+    <message>
+        <source>No fix</source>
+        <translation>无定位</translation>
+    </message>
+  </context>
 </TS>
