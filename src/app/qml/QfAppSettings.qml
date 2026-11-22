@@ -1860,99 +1860,12 @@ Page {
               }
 
               Label {
-                text: qsTr("Enable averaged positioning requirement")
-                font: QfTheme.defaultFont
-                color: QfTheme.mainTextColor
-                wrapMode: Text.WordWrap
-                Layout.fillWidth: true
-
-                MouseArea {
-                  anchors.fill: parent
-                  onClicked: averagedPositioning.toggle()
-                }
-              }
-
-              QfSwitch {
-                id: averagedPositioning
-                Layout.preferredWidth: implicitContentWidth
-                Layout.alignment: Qt.AlignTop
-                checked: positioningSettings.averagedPositioning
-                onCheckedChanged: {
-                  positioningSettings.averagedPositioning = checked;
-                }
-              }
-
-              RowLayout {
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
-                visible: averagedPositioning.checked
-                enabled: averagedPositioning.checked
-
-                Label {
-                  text: qsTr("Minimum positions count")
-                  font: QfTheme.defaultFont
-                  color: QfTheme.mainTextColor
-                  Layout.fillWidth: true
-                }
-
-                QfTextField {
-                  id: averagedPositioningMinimumCount
-                  font: QfTheme.defaultFont
-                  horizontalAlignment: TextInput.AlignRight
-                  inputMethodHints: Qt.ImhDigitsOnly
-                  validator: IntValidator {
-                    locale: 'C'
-                  }
-
-                  Component.onCompleted: {
-                    text = isNaN(positioningSettings.averagedPositioningMinimumCount) ? '' : positioningSettings.averagedPositioningMinimumCount;
-                  }
-
-                  onTextChanged: {
-                    if (text.length === 0 || isNaN(text)) {
-                      positioningSettings.averagedPositioningMinimumCount = NaN;
-                    } else {
-                      positioningSettings.averagedPositioningMinimumCount = parseInt(text);
-                    }
-                  }
-                }
-              }
-
-              Label {
-                text: qsTr("Automatically end collection when minimum number is met")
-                font: QfTheme.defaultFont
-                color: QfTheme.mainTextColor
-                wrapMode: Text.WordWrap
-                Layout.fillWidth: true
-                enabled: averagedPositioning.checked
-                visible: averagedPositioning.checked
-                Layout.leftMargin: 8
-
-                MouseArea {
-                  anchors.fill: parent
-                  onClicked: averagedPositioningAutomaticEnd.toggle()
-                }
-              }
-
-              QfSwitch {
-                id: averagedPositioningAutomaticEnd
-                Layout.preferredWidth: implicitContentWidth
-                Layout.alignment: Qt.AlignTop
-                enabled: averagedPositioning.checked
-                visible: averagedPositioning.checked
-                checked: positioningSettings.averagedPositioningAutomaticStop
-                onCheckedChanged: {
-                  positioningSettings.averagedPositioningAutomaticStop = checked;
-                }
-              }
-
-              Label {
-                text: qsTr("When enabled, digitizing vertices with a cursor locked to position will only accepted an averaged position from a minimum number of collected positions. Digitizing using averaged positions is done by pressing and holding the add vertex button, which will collect positions until the press is released. Accuracy requirement settings are respected when enabled.")
+                text: qsTr("Point capture accuracy and averaging requirements are configured in the \"GNSS capture quality control\" group below.")
                 font: QfTheme.tipFont
                 color: QfTheme.secondaryTextColor
-                textFormat: Qt.RichText
                 wrapMode: Text.WordWrap
-                Layout.fillWidth: true
               }
 
               Item {
@@ -2033,7 +1946,7 @@ Page {
               }
 
               Label {
-                text: qsTr("This value will correct the Z values recorded from the positioning device. If a value of 1.6 is entered, the system will automatically subtract 1.6 from each recorded value. Make sure to insert the effective antenna height, i.e. pole length + antenna phase center offset.")
+                text: qsTr("This value will correct the Z values recorded from the positioning device. If a value of 1.6 is entered, the system will automatically subtract 1.6 from each recorded value. Make sure to insert the effective antenna height, i.e. pole length + antenna phase center offset. The pole height is stored per project and can be edited from the main screen status card; this value is only used as the default for new projects.")
                 font: QfTheme.tipFont
                 color: QfTheme.secondaryTextColor
 
@@ -2220,6 +2133,224 @@ Page {
                 checked: positioningSettings.logging
                 onCheckedChanged: {
                   positioningSettings.logging = checked;
+                }
+              }
+
+              Label {
+                text: qsTr('GNSS capture quality control')
+                font: QfTheme.strongFont
+                color: QfTheme.mainTextColor
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+                Layout.topMargin: 10
+                Layout.bottomMargin: 5
+                Layout.columnSpan: 2
+              }
+
+              Label {
+                text: qsTr("Require fixed solution")
+                font: QfTheme.defaultFont
+                color: QfTheme.mainTextColor
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+
+                MouseArea {
+                  anchors.fill: parent
+                  onClicked: rtkRequireFixedSolutionSwitch.toggle()
+                }
+              }
+
+              QfSwitch {
+                id: rtkRequireFixedSolutionSwitch
+                Layout.preferredWidth: implicitContentWidth
+                Layout.alignment: Qt.AlignTop
+                checked: positioningSettings.rtkRequireFixedSolution
+                onCheckedChanged: {
+                  positioningSettings.rtkRequireFixedSolution = checked;
+                }
+              }
+
+              RowLayout {
+                Layout.columnSpan: 2
+                Layout.fillWidth: true
+
+                Label {
+                  text: qsTr("Horizontal accuracy limit (HRMS)")
+                  font: QfTheme.defaultFont
+                  color: QfTheme.mainTextColor
+                  wrapMode: Text.WordWrap
+                  Layout.fillWidth: true
+                }
+
+                QfTextField {
+                  id: rtkMaxHrmsInput
+                  Layout.preferredWidth: 110
+                  font: QfTheme.defaultFont
+                  horizontalAlignment: TextInput.AlignRight
+                  suffixText: qsTr("m")
+                  inputMethodHints: Qt.ImhFormattedNumbersOnly
+                  validator: DoubleValidator {
+                    locale: 'C'
+                  }
+
+                  Component.onCompleted: {
+                    text = isNaN(positioningSettings.rtkMaxHrms) ? '' : positioningSettings.rtkMaxHrms;
+                  }
+
+                  onTextChanged: {
+                    if (text.length === 0 || isNaN(text)) {
+                      return;
+                    }
+                    const value = parseFloat(text);
+                    if (value >= 0) {
+                      positioningSettings.rtkMaxHrms = value;
+                    }
+                  }
+                }
+              }
+
+              RowLayout {
+                Layout.columnSpan: 2
+                Layout.fillWidth: true
+
+                Label {
+                  text: qsTr("Vertical accuracy limit (VRMS)")
+                  font: QfTheme.defaultFont
+                  color: QfTheme.mainTextColor
+                  wrapMode: Text.WordWrap
+                  Layout.fillWidth: true
+                }
+
+                QfTextField {
+                  id: rtkMaxVrmsInput
+                  Layout.preferredWidth: 110
+                  font: QfTheme.defaultFont
+                  horizontalAlignment: TextInput.AlignRight
+                  suffixText: qsTr("m")
+                  inputMethodHints: Qt.ImhFormattedNumbersOnly
+                  validator: DoubleValidator {
+                    locale: 'C'
+                  }
+
+                  Component.onCompleted: {
+                    text = isNaN(positioningSettings.rtkMaxVrms) ? '' : positioningSettings.rtkMaxVrms;
+                  }
+
+                  onTextChanged: {
+                    if (text.length === 0 || isNaN(text)) {
+                      return;
+                    }
+                    const value = parseFloat(text);
+                    if (value >= 0) {
+                      positioningSettings.rtkMaxVrms = value;
+                    }
+                  }
+                }
+              }
+
+              RowLayout {
+                Layout.columnSpan: 2
+                Layout.fillWidth: true
+
+                Label {
+                  text: qsTr("Sampling timeout")
+                  font: QfTheme.defaultFont
+                  color: QfTheme.mainTextColor
+                  wrapMode: Text.WordWrap
+                  Layout.fillWidth: true
+                }
+
+                QfTextField {
+                  id: rtkSampleTimeoutInput
+                  Layout.preferredWidth: 110
+                  font: QfTheme.defaultFont
+                  horizontalAlignment: TextInput.AlignRight
+                  suffixText: qsTr("s")
+                  inputMethodHints: Qt.ImhDigitsOnly
+                  validator: IntValidator {
+                    locale: 'C'
+                    bottom: 5
+                    top: 600
+                  }
+
+                  Component.onCompleted: {
+                    text = isNaN(positioningSettings.rtkSampleTimeoutSeconds) ? '' : positioningSettings.rtkSampleTimeoutSeconds;
+                  }
+
+                  onTextChanged: {
+                    if (text.length === 0 || isNaN(text)) {
+                      return;
+                    }
+                    const value = parseInt(text);
+                    if (value > 0) {
+                      positioningSettings.rtkSampleTimeoutSeconds = value;
+                    }
+                  }
+                }
+              }
+
+              Label {
+                text: qsTr("Sampling count (times)")
+                font: QfTheme.defaultFont
+                color: QfTheme.mainTextColor
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+              }
+
+              QfComboBox {
+                id: rtkSampleCountComboBox
+                Layout.preferredWidth: 110
+                Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+                font: QfTheme.defaultFont
+                popup.font: QfTheme.defaultFont
+                popup.topMargin: mainWindow.sceneTopMargin
+                popup.bottomMargin: mainWindow.sceneTopMargin
+                model: ["1", "3", "5"]
+
+                property bool loaded: false
+
+                Component.onCompleted: {
+                  const index = model.indexOf(String(positioningSettings.rtkSampleCount));
+                  currentIndex = index >= 0 ? index : 2;
+                  loaded = true;
+                }
+
+                onCurrentIndexChanged: {
+                  if (loaded) {
+                    positioningSettings.rtkSampleCount = parseInt(model[currentIndex]);
+                  }
+                }
+              }
+
+              Label {
+                text: qsTr("These limits apply to point capture; a limit of 0 disables that check. The accuracy indicator thresholds above only affect the map badge and vertex digitizing.")
+                font: QfTheme.tipFont
+                color: QfTheme.secondaryTextColor
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+                Layout.columnSpan: 2
+              }
+
+              Label {
+                text: qsTr("Allow forced capture (emergency)")
+                font: QfTheme.defaultFont
+                color: QfTheme.mainTextColor
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+
+                MouseArea {
+                  anchors.fill: parent
+                  onClicked: rtkAllowForcedCaptureSwitch.toggle()
+                }
+              }
+
+              QfSwitch {
+                id: rtkAllowForcedCaptureSwitch
+                Layout.preferredWidth: implicitContentWidth
+                Layout.alignment: Qt.AlignTop
+                checked: positioningSettings.rtkAllowForcedCapture
+                onCheckedChanged: {
+                  positioningSettings.rtkAllowForcedCapture = checked;
                 }
               }
             }

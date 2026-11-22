@@ -389,7 +389,9 @@ ApplicationWindow {
     }
 
     elevationCorrectionMode: positioningSettings.elevationCorrectionMode
-    antennaHeight: positioningSettings.antennaHeightActivated ? positioningSettings.antennaHeight : 0
+    // The pole height is a project parameter; the global antenna height setting
+    // only seeds projects that do not have a stored value yet.
+    antennaHeight: rtkProjectSettings.antennaHeight
 
     loggingPath: platformUtilities.appDataDirs()[0] + "/logs"
     logging: positioningSettings.logging
@@ -493,6 +495,24 @@ ApplicationWindow {
         gnssButton.followOrientation();
       }
     }
+  }
+
+  /**
+   * Project scoped RTK parameters (pole height, correction, control points).
+   * System wide quality control lives in positioningSettings above.
+   */
+  QfRtkProjectSettings {
+    id: rtkProjectSettings
+    projectFilePath: projectInfo ? projectInfo.filePath : ""
+    defaultAntennaHeight: positioningSettings.antennaHeightActivated ? positioningSettings.antennaHeight : 0
+  }
+
+  QfRtkCorrectionDialog {
+    id: rtkCorrectionDialog
+    rtkSettings: rtkProjectSettings
+    positioning: positionSource
+    qualitySettings: positioningSettings
+    mapSettings: mapCanvas.mapSettings
   }
 
   Timer {
@@ -1236,7 +1256,10 @@ ApplicationWindow {
       mapSettings: mapCanvas.mapSettings
       currentLayer: dashBoard.activeLayer
       positionInformation: positionSource.positionInformation
-      positionLocked: !digitizingToolbar.cogoEnabled && positionSource.active && (positioningSettings.positioningCoordinateLock || gnssButton.followActive)
+      // A point feature is always measured at the live GNSS position. Following the
+      // map is purely a view state and must never decide where a measured point lands.
+      readonly property bool rtkPointMeasureLock: !!dashBoard.activeLayer && dashBoard.activeLayer.type === Qgis.LayerType.Vector && dashBoard.activeLayer.geometryType() === Qgis.GeometryType.Point && (stateMachine.state === "digitize" || stateMachine.state === "measure")
+      positionLocked: !digitizingToolbar.cogoEnabled && positionSource.active && (positioningSettings.positioningCoordinateLock || gnssButton.followActive || rtkPointMeasureLock)
       rubberbandModel: geometryEditorsToolbar.stateVisible ? geometryEditorsToolbar.editorRubberbandModel : digitizingToolbar.rubberbandModel
       averagedPosition: positionSource.averagedPosition
       averagedPositionCount: positionSource.averagedPositionCount
@@ -2971,6 +2994,16 @@ ApplicationWindow {
       running: mapCanvasMap.isRendering || (stateMachine.state === '3d' && mapCanvas3DLoader.item && mapCanvas3DLoader.item.isLoading && !mapCanvas3DLoader.item.isFirstLoad)
     }
 
+    QfRtkStatusCard {
+      id: rtkStatusCard
+      anchors.right: parent.right
+      anchors.rightMargin: mainWindow.sceneRightMargin + 4
+      anchors.bottom: locationToolbar.top
+      anchors.bottomMargin: 6
+      projectSettings: rtkProjectSettings
+      onConfigureRequested: rtkCorrectionDialog.open()
+    }
+
     Column {
       id: locationToolbar
       objectName: "locationToolbar"
@@ -3303,6 +3336,12 @@ ApplicationWindow {
 
       spacing: 4
 
+      // Reserve room for the GNSS status label drawn above the capture button.
+      Item {
+        width: 1
+        height: digitizingToolbar.stateVisible && digitizingToolbar.rtkPointMode ? 18 : 0
+      }
+
       QfDigitizingToolbar {
         id: digitizingToolbar
 
@@ -3314,6 +3353,13 @@ ApplicationWindow {
         mapSettings: mapCanvas.mapSettings
         showConfirmButton: stateMachine.state === "digitize"
         screenHovering: mapCanvasMap.hovered
+
+        rtkSettings: rtkProjectSettings
+
+        onRequestPositioningSettings: {
+          qfieldSettings.currentPanel = 1;
+          qfieldSettings.visible = true;
+        }
 
         cogoOperationSettings: informationDrawer.cogoOperationSettings
 

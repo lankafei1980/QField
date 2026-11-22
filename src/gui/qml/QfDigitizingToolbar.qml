@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 import org.qgis
 import org.qfield.core
 import org.qfield.gui
@@ -33,6 +34,15 @@ QfVisibilityFadingRow {
 
   signal requestJumpToPoint(var center, real scale, bool handleMargins)
   signal requestPosition(var item, bool fromCoordinateLocator)
+  signal requestPositioningSettings
+
+  /**
+   * Project scoped RTK settings (pole height and correction). When set, point
+   * layers are captured through the RTK point capture flow.
+   */
+  property var rtkSettings: undefined
+
+  readonly property bool rtkPointMode: !!rubberbandModel && rubberbandModel.geometryType === Qgis.GeometryType.Point && digitizingToolbar.rtkSettings !== undefined && digitizingToolbar.rtkSettings !== null && !cogoEnabled
 
   spacing: 4
 
@@ -203,113 +213,259 @@ QfVisibilityFadingRow {
     }
   }
 
-  QfToolButton {
-    id: addVertexButton
-    round: true
-    enabled: (cogoEnabled && cogoExecutor.isReady) || (!cogoEnabled && !screenHovering)
-    bgcolor: {
-      if (!enabled) {
-        QfTheme.toolButtonBackgroundSemiOpaqueColor;
-      } else if (!showConfirmButton) {
-        QfTheme.toolButtonBackgroundColor;
-      } else if (!rubberbandModel || rubberbandModel.geometryType === Qgis.GeometryType.Point || rubberbandModel.geometryType === Qgis.GeometryType.Null) {
-        QfTheme.mainColor;
-      } else {
-        QfTheme.toolButtonBackgroundColor;
-      }
-    }
-    iconSource: QfTheme.getThemeVectorIcon("ic_add_white_24dp")
-    iconColor: enabled ? QfTheme.toolButtonColor : QfTheme.toolButtonBackgroundSemiOpaqueColor
+  Item {
+    id: addVertexButtonContainer
+    width: addVertexButton.width + 10
+    height: addVertexButton.height
 
-    property bool lastAdditionAveraged: false
-    property bool averagedPositionPressAndHeld: false
-    property bool averagedPositionAutoRelease: false
-
-    Connections {
-      target: positionSource
-
-      function onAveragedPositionCountChanged() {
-        if (addVertexButton.averagedPositionAutoRelease && positionSource.averagedPosition && positionSource.averagedPositionCount >= positioningSettings.averagedPositioningMinimumCount && positioningSettings.averagedPositioningAutomaticStop) {
-          addVertexButton.averagedPositionPressAndHeld = true;
-          addVertexButton.released();
-        }
-      }
+    /**
+     * Integrated ring around the capture button: shows the sampling progress and
+     * turns red when a capture fails.
+     */
+    QfProgressRing {
+      id: captureProgressRing
+      anchors.centerIn: addVertexButton
+      size: addVertexButton.width + 10
+      width: size
+      height: size
+      from: 0
+      to: 1
+      value: Math.max(0, Math.min(1, rtkCapture.progress))
+      strokeWidth: 3
+      color: rtkCapture.state === "failed" ? QfTheme.errorColor : QfTheme.mainColor
+      backgroundColor: "#33ffffff"
+      visible: rtkCapture.state === "collecting" || rtkCapture.state === "succeeded" || rtkCapture.state === "failed"
     }
 
-    onPressAndHold: {
-      if (!cogoEnabled && coordinateLocator && coordinateLocator.positionLocked) {
-        if (!checkAccuracyRequirement()) {
-          return;
-        }
-        averagedPositionPressAndHeld = true;
-        positionSource.averagedPosition = true;
-      }
+    /**
+     * Chinese GNSS fix state, right above the capture button.
+     */
+    QfGnssStatusLabel {
+      id: gnssStatusLabel
+      anchors.horizontalCenter: addVertexButton.horizontalCenter
+      anchors.bottom: addVertexButton.top
+      anchors.bottomMargin: 3
+      source: positionSource
+      collecting: rtkCapture.collecting
+      visible: digitizingToolbar.rtkPointMode
     }
 
-    onReleased: {
-      if (!averagedPositionPressAndHeld) {
-        return;
+    QfToolButton {
+      id: addVertexButton
+      anchors.centerIn: parent
+      round: true
+      enabled: !rtkCapture.collecting && ((cogoEnabled && cogoExecutor.isReady) || (!cogoEnabled && !screenHovering))
+      bgcolor: {
+        if (!enabled) {
+          QfTheme.toolButtonBackgroundSemiOpaqueColor;
+        } else if (!showConfirmButton) {
+          QfTheme.toolButtonBackgroundColor;
+        } else if (!rubberbandModel || rubberbandModel.geometryType === Qgis.GeometryType.Point || rubberbandModel.geometryType === Qgis.GeometryType.Null) {
+          QfTheme.mainColor;
+        } else {
+          QfTheme.toolButtonBackgroundColor;
+        }
       }
-      averagedPositionPressAndHeld = false;
-      averagedPositionAutoRelease = false;
-      if (coordinateLocator && coordinateLocator.positionLocked) {
-        if (positioningSettings.averagedPositioning && positioningSettings.averagedPositioningMinimumCount > positionSource.averagedPositionCount) {
-          displayToast(qsTr("The collected positions count does not meet the requirement"), 'warning');
-          positionSource.averagedPosition = false;
-          return;
-        }
-        if (!checkAccuracyRequirement()) {
-          positionSource.averagedPosition = false;
-          return;
-        }
-        lastAdditionAveraged = true;
-        addVertex();
-        if (rubberbandModel.geometryType === Qgis.GeometryType.Point || rubberbandModel.geometryType === Qgis.GeometryType.Null) {
-          confirm();
-        }
-        positionSource.averagedPosition = false;
-      }
-    }
+      iconSource: QfTheme.getThemeVectorIcon("ic_add_white_24dp")
+      iconColor: enabled ? QfTheme.toolButtonColor : QfTheme.toolButtonBackgroundSemiOpaqueColor
 
-    onCanceled: {
-      if (coordinateLocator.positionLocked) {
-        positionSource.averagedPosition = false;
-      }
-    }
+      property bool lastAdditionAveraged: false
+      property bool averagedPositionPressAndHeld: false
+      property bool averagedPositionAutoRelease: false
 
-    onClicked: {
-      if (cogoEnabled) {
-        if (cogoExecutor.isReady) {
-          const success = cogoExecutor.execute();
-          if (success) {
-            cogoOperationSettings.clear();
-            // Recenter to last added vertex
-            mapSettings.setCenter(rubberbandModel.lastCoordinate, true);
-            if (Number(rubberbandModel.geometryType) === Qgis.GeometryType.Point) {
-              confirm();
-            }
+      Connections {
+        target: positionSource
+
+        function onAveragedPositionCountChanged() {
+          if (addVertexButton.averagedPositionAutoRelease && positionSource.averagedPosition && positionSource.averagedPositionCount >= positioningSettings.averagedPositioningMinimumCount && positioningSettings.averagedPositioningAutomaticStop) {
+            addVertexButton.averagedPositionPressAndHeld = true;
+            addVertexButton.released();
           }
         }
-        return;
       }
-      if (!checkAccuracyRequirement()) {
-        return;
-      }
-      if (coordinateLocator && coordinateLocator.positionLocked && positioningSettings.averagedPositioning && (positioningSettings.averagedPositioningMinimumCount > 1 || !positioningSettings.averagedPositioningAutomaticStop)) {
-        if (!positionSource.averagedPosition) {
-          averagedPositionAutoRelease = true;
-          positionSource.averagedPosition = true;
-        } else {
-          addVertexButton.averagedPositionPressAndHeld = true;
-          addVertexButton.released();
+
+      onPressAndHold: {
+        if (rtkPointMode) {
+          // Long press has no meaning for RTK point capture: a single tap samples
+          // the configured number of fixes by itself.
+          return;
         }
-        return;
+        if (!cogoEnabled && coordinateLocator && coordinateLocator.positionLocked) {
+          if (!checkAccuracyRequirement()) {
+            return;
+          }
+          averagedPositionPressAndHeld = true;
+          positionSource.averagedPosition = true;
+        }
       }
-      lastAdditionAveraged = false;
-      if (rubberbandModel.geometryType === Qgis.GeometryType.Point || rubberbandModel.geometryType === Qgis.GeometryType.Null) {
-        confirm();
+
+      onReleased: {
+        if (!averagedPositionPressAndHeld) {
+          return;
+        }
+        averagedPositionPressAndHeld = false;
+        averagedPositionAutoRelease = false;
+        if (coordinateLocator && coordinateLocator.positionLocked) {
+          if (positioningSettings.averagedPositioning && positioningSettings.averagedPositioningMinimumCount > positionSource.averagedPositionCount) {
+            displayToast(qsTr("The collected positions count does not meet the requirement"), 'warning');
+            positionSource.averagedPosition = false;
+            return;
+          }
+          if (!checkAccuracyRequirement()) {
+            positionSource.averagedPosition = false;
+            return;
+          }
+          lastAdditionAveraged = true;
+          addVertex();
+          if (rubberbandModel.geometryType === Qgis.GeometryType.Point || rubberbandModel.geometryType === Qgis.GeometryType.Null) {
+            confirm();
+          }
+          positionSource.averagedPosition = false;
+        }
+      }
+
+      onCanceled: {
+        if (coordinateLocator.positionLocked) {
+          positionSource.averagedPosition = false;
+        }
+      }
+
+      onClicked: {
+        if (rtkCapture.collecting) {
+          return;
+        }
+
+        if (cogoEnabled) {
+          if (cogoExecutor.isReady) {
+            const success = cogoExecutor.execute();
+            if (success) {
+              cogoOperationSettings.clear();
+              // Recenter to last added vertex
+              mapSettings.setCenter(rubberbandModel.lastCoordinate, true);
+              if (Number(rubberbandModel.geometryType) === Qgis.GeometryType.Point) {
+                confirm();
+              }
+            }
+          }
+          return;
+        }
+
+        if (rtkPointMode) {
+          lastAdditionAveraged = false;
+          rtkCapture.start();
+          return;
+        }
+
+        if (!checkAccuracyRequirement()) {
+          return;
+        }
+        if (coordinateLocator && coordinateLocator.positionLocked && positioningSettings.averagedPositioning && (positioningSettings.averagedPositioningMinimumCount > 1 || !positioningSettings.averagedPositioningAutomaticStop)) {
+          if (!positionSource.averagedPosition) {
+            averagedPositionAutoRelease = true;
+            positionSource.averagedPosition = true;
+          } else {
+            addVertexButton.averagedPositionPressAndHeld = true;
+            addVertexButton.released();
+          }
+          return;
+        }
+        lastAdditionAveraged = false;
+        if (rubberbandModel.geometryType === Qgis.GeometryType.Point || rubberbandModel.geometryType === Qgis.GeometryType.Null) {
+          confirm();
+        } else {
+          addVertex();
+        }
+      }
+    }
+  }
+
+  /**
+   * Point capture state machine: quality control, N samples, averaging and the
+   * project correction.
+   */
+  QfRtkCapture {
+    id: rtkCapture
+    positioning: positionSource
+    qualitySettings: positioningSettings
+    rtkSettings: digitizingToolbar.rtkSettings
+  }
+
+  Timer {
+    id: rtkCaptureResetTimer
+    interval: 1600
+    repeat: false
+    onTriggered: rtkCapture.reset()
+  }
+
+  property string rtkForceMessage: ""
+
+  Connections {
+    target: rtkCapture
+
+    function onFinished(point, forced) {
+      rtkCaptureResetTimer.restart();
+      digitizingToolbar.confirmAt(point);
+    }
+
+    function onFailed(reason) {
+      if (positioningSettings.rtkAllowForcedCapture && rtkCapture.samples.length > 0) {
+        digitizingToolbar.rtkForceMessage = qsTr("Sampling timed out, %1 valid samples collected. Do you want to save the point with the collected samples?").arg(rtkCapture.samples.length);
+        rtkForceDialog.open();
       } else {
-        addVertex();
+        displayToast(rtkCapture.describeReason(reason), 'error');
+        rtkCaptureResetTimer.restart();
+      }
+    }
+
+    function onBlocked(reason, canForce) {
+      if (canForce) {
+        digitizingToolbar.rtkForceMessage = qsTr("%1 Do you want to force the capture?").arg(rtkCapture.describeReason(reason));
+        rtkForceDialog.open();
+      } else if (rtkCapture.isNtripReason(reason)) {
+        displayToast(rtkCapture.describeReason(reason), 'warning', qsTr("Go to settings"), () => {
+          digitizingToolbar.requestPositioningSettings();
+        });
+      } else {
+        displayToast(rtkCapture.describeReason(reason), 'warning');
+      }
+    }
+  }
+
+  QfDialog {
+    id: rtkForceDialog
+    parent: mainWindow.contentItem
+    title: qsTr("Forced capture")
+    standardButtons: Dialog.NoButton
+
+    Label {
+      width: parent.width
+      wrapMode: Text.WordWrap
+      text: digitizingToolbar.rtkForceMessage
+    }
+
+    RowLayout {
+      width: parent.width
+      spacing: 8
+
+      Item {
+        Layout.fillWidth: true
+      }
+
+      QfButton {
+        text: qsTr("Cancel")
+        onClicked: {
+          rtkForceDialog.close();
+          rtkCapture.reset();
+        }
+      }
+
+      QfButton {
+        text: qsTr("Force capture")
+        bgcolor: QfTheme.errorColor
+        onClicked: {
+          rtkForceDialog.close();
+          rtkCapture.forceCapture();
+        }
       }
     }
   }
@@ -378,6 +534,13 @@ QfVisibilityFadingRow {
   }
 
   function confirm() {
+    // Point features must be measured at the live GNSS position. Guard the
+    // map-tap path (and the volume-key path) against silently falling back to
+    // the coordinate cursor target when positioning is unavailable.
+    if (!geometryRequested && coordinateLocator.rtkCapturePoint === undefined && rubberbandModel && rubberbandModel.geometryType === Qgis.GeometryType.Point && (!positionSource.active || !positionSource.positionInformation || !positionSource.positionInformation.latitudeValid)) {
+      displayToast(qsTr("No positioning, unable to capture"), 'warning');
+      return;
+    }
     rubberbandModel.frozen = true;
     if (addVertexButton.lastAdditionAveraged) {
       rubberbandModel.removeVertex();
@@ -385,5 +548,18 @@ QfVisibilityFadingRow {
       digitizingLogger.addCoordinate(coordinateLocator.currentCoordinate);
     }
     confirmed();
+  }
+
+  /**
+   * Commits a point that has already been measured (averaged GNSS position with
+   * the project corrections applied) through the regular feature creation path.
+   */
+  function confirmAt(point) {
+    if (!point || point.x === undefined) {
+      return;
+    }
+    coordinateLocator.rtkCapturePoint = point;
+    confirm();
+    coordinateLocator.rtkCapturePoint = undefined;
   }
 }

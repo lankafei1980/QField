@@ -51,7 +51,14 @@ Item {
   //! Overwritten by stylus / hoverHandler.
   property variant sourceLocation: undefined // Screen coordinate
 
-  readonly property variant currentCoordinate: !!overrideLocation && overrideLocation.x ? overrideLocation : snappingUtils.snappedCoordinate
+  /**
+   * One-shot override used when a measured point (averaged GNSS position with the
+   * project corrections applied) has to be committed. It takes precedence over
+   * `overrideLocation` and is reset to `undefined` once the point is captured.
+   */
+  property variant rtkCapturePoint: undefined // QgsPoint
+
+  readonly property variant currentCoordinate: !!rtkCapturePoint ? rtkCapturePoint : !!overrideLocation && overrideLocation.x ? overrideLocation : snappingUtils.snappedCoordinate
 
   // some trickery here: the first part (!mapSettings.visibleExtent) is only there to get a signal when
   // the map canvas extent changes (user pans/zooms) and the calculation of the display position is retriggered

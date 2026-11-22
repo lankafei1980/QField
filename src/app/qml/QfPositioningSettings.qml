@@ -41,6 +41,18 @@ Settings {
   property int averagedPositioningMinimumCount: 1
   property bool averagedPositioningAutomaticStop: true
 
+  /**
+   * GNSS capture quality control. These are system-wide settings shared by every
+   * project (unlike the pole height and the correction parameters, which are
+   * stored per project).
+   */
+  property bool rtkRequireFixedSolution: true
+  property real rtkMaxHrms: 0.02
+  property real rtkMaxVrms: 0.04
+  property int rtkSampleTimeoutSeconds: 60
+  property int rtkSampleCount: 5
+  property bool rtkAllowForcedCapture: false
+
   property real antennaHeight: 0.0
   property bool antennaHeightActivated: false
   property bool skipAltitudeCorrection: false

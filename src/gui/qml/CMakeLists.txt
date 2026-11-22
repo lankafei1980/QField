@@ -35,6 +35,7 @@ set(QFIELD_GUI_QML_FILES
     QfGeometryEditorsToolbar.qml
     QfGeometryHighlighter.qml
     QfGeometryRenderer.qml
+    QfGnssStatusLabel.qml
     QfImageDial.qml
     QfInformationDrawer.qml
     QfInformationPopup.qml
@@ -68,6 +69,11 @@ set(QFIELD_GUI_QML_FILES
     QfProjectCreationScreen.qml
     QfProjectThumbnail.qml
     QfRelationCombobox.qml
+    QfRtkCapture.qml
+    QfRtkControlPointDialog.qml
+    QfRtkCorrectionDialog.qml
+    QfRtkProjectSettings.qml
+    QfRtkStatusCard.qml
     QfScaleBar.qml
     QfScrollBar.qml
     QfSearchBar.qml
@@ -92,6 +98,8 @@ set(QFIELD_GUI_QML_FILES
     QfVariableEditor.qml
     QfVisibilityFadingRow.qml
     QfWelcomeAction.qml
+    QfRtkMath.js
+    QfRtkStatus.js
     editorwidgets/ExternalResourceUtils.js
     editorwidgets/QfEditorWidgetBase.qml
     editorwidgets/QfEditorWidgetBinary.qml
@@ -130,7 +138,7 @@ set(QFIELD_GUI_QML_FILES
     processingparameterwidgets/QfProcessingParameterWidgetBase.qml)
 
 # A plain script, not a component to expose.
-set_source_files_properties(editorwidgets/ExternalResourceUtils.js
+set_source_files_properties(editorwidgets/ExternalResourceUtils.js QfRtkMath.js QfRtkStatus.js
                             PROPERTIES QT_QML_SKIP_QMLDIR_ENTRY TRUE)
 
 # Generate a qmldir for each of the QML subdirectories.
