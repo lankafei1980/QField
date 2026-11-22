@@ -48,6 +48,7 @@ class QfBasemapService : public QObject
     Q_PROPERTY( bool busy READ busy NOTIFY busyChanged )
     Q_PROPERTY( QString statusMessage READ statusMessage NOTIFY statusMessageChanged )
     Q_PROPERTY( QVariantList layers READ layers NOTIFY layersChanged )
+    Q_PROPERTY( QVariantList creationLayers READ creationLayers NOTIFY layersChanged )
     Q_PROPERTY( bool googleAvailable READ googleAvailable NOTIFY layersChanged )
 
   public:
@@ -66,6 +67,7 @@ class QfBasemapService : public QObject
     bool busy() const { return mBusy; }
     QString statusMessage() const { return mStatusMessage; }
     QVariantList layers() const;
+    QVariantList creationLayers() const;
     bool googleAvailable() const { return mGoogleEnabled; }
 
     //! Authenticates against the configured server and loads its catalogue
@@ -87,16 +89,6 @@ class QfBasemapService : public QObject
     //! (used while the user drags the opacity slider)
     Q_INVOKABLE void setLayerOpacityLive( const QString &id, double opacity );
 
-    //! Sorts the injected basemap layers below the project layers: satellite
-    //! imagery at the bottom, then orthophotos, vector basemaps and labels.
-    Q_INVOKABLE void sortLayers();
-
-    //! Temporarily raises a layer being edited within its parent group.
-    Q_INVOKABLE void raiseDrawingLayer( const QString &layerId );
-
-    //! Restores the layer raised by raiseDrawingLayer().
-    Q_INVOKABLE void restoreDrawingLayer();
-
     /**
      * Returns an encoded QGIS layer URI for one catalog entry, or an empty
      * string when the entry is not available (e.g. no Tianditu key yet). Used
@@ -113,10 +105,6 @@ class QfBasemapService : public QObject
     void busyChanged();
     void statusMessageChanged();
     void layersChanged();
-
-    //! Emitted after a layer tree reorder, so the flat layer tree model can be
-    //! rebuilt (its row map does not support arbitrary moves).
-    void layersReordered();
 
   private:
     struct Entry
@@ -137,7 +125,6 @@ class QfBasemapService : public QObject
     void fetchSysConfig();
     void fetchRasters();
     void applyLayerOpacity( const QString &id, double opacity, bool commit );
-    void applyLayerOrder();
     QString entryUri( const Entry &entry ) const;
     void addEntryLayer( const QString &id );
     void removeEntryLayer( const QString &id );
@@ -157,10 +144,6 @@ class QfBasemapService : public QObject
     QString mStatusMessage;
     bool mBusy = false;
     bool mGoogleEnabled = false;
-
-    // Layer temporarily raised while editing (restored when editing stops).
-    QString mRaisedLayerId;
-    int mRaisedIndex = -1;
 
     QList<Entry> mCatalog;
     QStringList mEnabledIds;

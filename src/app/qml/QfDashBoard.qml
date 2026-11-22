@@ -489,44 +489,27 @@ Drawer {
         verticalAlignment: Text.AlignVCenter
         clip: true
 
-        Row {
+        QfButton {
+          id: toggleAllButton
+
           anchors {
             verticalCenter: parent.verticalCenter
             right: parent.right
             rightMargin: 10
           }
-          spacing: 6
+          visible: legend.model.hasCollapsibleItems
 
-          QfButton {
-            id: sortLayersButton
+          text: legend.model.isCollapsed ? qsTr('Expand All') : qsTr('Collapse All')
+          bgcolor: QfTheme.darkTheme ? QfTheme.mainBackgroundColorSemiOpaque : QfTheme.lightestGraySemiOpaque
+          color: QfTheme.mainTextColor
+          icon.source: legend.model.isCollapsed ? QfTheme.getThemeVectorIcon('ic_expand_all_24dp') : QfTheme.getThemeVectorIcon('ic_collapse_all_24dp')
+          icon.width: 14
+          icon.height: 14
+          font.pointSize: QfTheme.tinyFont.pointSize - 2
 
-            text: qsTr("Sort")
-            bgcolor: QfTheme.darkTheme ? QfTheme.mainBackgroundColorSemiOpaque : QfTheme.lightestGraySemiOpaque
-            color: QfTheme.mainTextColor
-            font.pointSize: QfTheme.tinyFont.pointSize - 2
-
-            onClicked: {
-              QfBasemapService.sortLayers();
-              displayToast(qsTr("Layer order sorted"));
-            }
-          }
-
-          QfButton {
-            id: toggleAllButton
-            visible: legend.model.hasCollapsibleItems
-
-            text: legend.model.isCollapsed ? qsTr('Expand All') : qsTr('Collapse All')
-            bgcolor: QfTheme.darkTheme ? QfTheme.mainBackgroundColorSemiOpaque : QfTheme.lightestGraySemiOpaque
-            color: QfTheme.mainTextColor
-            icon.source: legend.model.isCollapsed ? QfTheme.getThemeVectorIcon('ic_expand_all_24dp') : QfTheme.getThemeVectorIcon('ic_collapse_all_24dp')
-            icon.width: 14
-            icon.height: 14
-            font.pointSize: QfTheme.tinyFont.pointSize - 2
-
-            onClicked: {
-              legend.model.setAllCollapsed(!legend.model.isCollapsed);
-              projectInfo.saveLayerTreeState();
-            }
+          onClicked: {
+            legend.model.setAllCollapsed(!legend.model.isCollapsed);
+            projectInfo.saveLayerTreeState();
           }
         }
       }

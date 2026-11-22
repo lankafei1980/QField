@@ -17,7 +17,8 @@
 #include "qfbasemapservice.h"
 
 #include <QDebug>
-#include <QHash>
+#include <algorithm>
+#include <QList>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -98,8 +99,6 @@ QfBasemapService::QfBasemapService( QObject *parent )
   connect( QgsProject::instance(), &QgsProject::readProject, this, [this]() {
     // Layers live inside the project, they are gone as soon as another project
     // is loaded: put the user's selection back on top of the new project
-    mRaisedLayerId.clear();
-    mRaisedIndex = -1;
     QTimer::singleShot( 0, this, &QfBasemapService::restoreLayers );
   } );
 
@@ -175,6 +174,38 @@ QVariantList QfBasemapService::layers() const
     item.insert( QStringLiteral( "group" ), entry.group );
     item.insert( QStringLiteral( "enabled" ), entry.enabled );
     item.insert( QStringLiteral( "opacity" ), entry.opacity );
+    result.append( item );
+  }
+  return result;
+}
+
+QVariantList QfBasemapService::creationLayers() const
+{
+  // Enabled basemaps first, then the other available ones; within each group
+  // keep the same class order used on the map (labels, vector, ortho, imagery).
+  QList<const Entry *> sorted;
+  sorted.reserve( mCatalog.size() );
+  for ( const Entry &entry : mCatalog )
+  {
+    if ( !entry.url.isEmpty() )
+    {
+      sorted.append( &entry );
+    }
+  }
+  std::stable_sort( sorted.begin(), sorted.end(), []( const Entry *left, const Entry *right ) {
+    return left->enabled && !right->enabled;
+  } );
+
+  QVariantList result;
+  result.reserve( sorted.size() );
+  for ( const Entry *entry : std::as_const( sorted ) )
+  {
+    QVariantMap item;
+    item.insert( QStringLiteral( "id" ), entry->id );
+    item.insert( QStringLiteral( "name" ), entry->name );
+    item.insert( QStringLiteral( "group" ), entry->group );
+    item.insert( QStringLiteral( "enabled" ), entry->enabled );
+    item.insert( QStringLiteral( "uri" ), entryUri( *entry ) );
     result.append( item );
   }
   return result;
@@ -509,6 +540,16 @@ void QfBasemapService::addEntryLayer( const QString &id )
     return;
   }
 
+  // Skip basemaps already embedded in the project (e.g. the project basemap
+  // created by the new project wizard) to avoid a duplicate layer.
+  for ( QgsMapLayer *existing : QgsProject::instance()->mapLayers() )
+  {
+    if ( existing->source() == uri )
+    {
+      return;
+    }
+  }
+
   QgsRasterLayer *layer = new QgsRasterLayer( uri, entry->name, QStringLiteral( "wms" ) );
   if ( !layer->isValid() )
   {
@@ -524,21 +565,49 @@ void QfBasemapService::addEntryLayer( const QString &id )
   QgsProject::instance()->addMapLayer( layer, false );
   QgsLayerTreeGroup *root = QgsProject::instance()->layerTreeRoot();
 
-  int index = root->children().size();
-  if ( entry->group == QLatin1String( "ortho" ) )
+  // Insert the new basemap at its class position inside the injected block
+  // (labels > vector > ortho > imagery, top to bottom) without ever moving an
+  // existing node. Moving nodes corrupts the flat layer tree model and can
+  // empty layer groups, which is why CN8's reordering broke the legend.
+  const int rank = basemapRank( entry->id );
+  const QList<QgsLayerTreeNode *> children = root->children();
+  int insertIndex = -1;
+  int lastBasemapIndex = -1;
+  for ( int i = 0; i < children.size(); ++i )
   {
-    int basemapCount = 0;
-    const QMap<QString, QgsMapLayer *> layers = QgsProject::instance()->mapLayers();
-    for ( QgsMapLayer *candidate : layers )
+    QgsLayerTreeNode *node = children.at( i );
+    if ( node->nodeType() != QgsLayerTreeNode::NodeLayer )
     {
-      if ( candidate->customProperty( LAYER_GROUP_PROPERTY ).toString() == QLatin1String( "base" ) )
-      {
-        basemapCount++;
-      }
+      continue;
     }
-    index = qMax( 0, index - basemapCount );
+    QgsLayerTreeLayer *layerNode = qobject_cast<QgsLayerTreeLayer *>( node );
+    if ( !layerNode || !layerNode->layer() )
+    {
+      continue;
+    }
+    const QString existingId = layerNode->layer()->customProperty( LAYER_ID_PROPERTY ).toString();
+    const QString existingName = layerNode->layer()->name();
+    // The basemap embedded by the new project wizard is called "Basemap"
+    // ("底图"). Older projects were not tagged, so also detect it by name.
+    const bool projectBasemap = !layerNode->layer()->customProperty( QStringLiteral( "qfieldProjectBasemap" ) ).toString().isEmpty()
+                                || existingName == QLatin1String( "Basemap" )
+                                || existingName == QStringLiteral( "底图" );
+    if ( existingId.isEmpty() && !projectBasemap )
+    {
+      continue; // project layer, always above the basemap block
+    }
+    lastBasemapIndex = i;
+    const int existingRank = projectBasemap ? -1 : basemapRank( existingId );
+    if ( insertIndex < 0 && existingRank < rank )
+    {
+      insertIndex = i; // insert before the first lower priority basemap
+    }
   }
-  root->insertLayer( index, layer );
+  if ( insertIndex < 0 )
+  {
+    insertIndex = lastBasemapIndex >= 0 ? lastBasemapIndex + 1 : children.size();
+  }
+  root->insertLayer( insertIndex, layer );
 }
 
 void QfBasemapService::removeEntryLayer( const QString &id )
@@ -584,12 +653,6 @@ void QfBasemapService::restoreLayers()
   {
     addEntryLayer( id );
   }
-
-  applyLayerOrder();
-  // Even when the order was already correct, the flat layer tree model may not
-  // have tracked the injected layers (it does not support arbitrary moves and
-  // can be left with a stale row map): force a rebuild.
-  emit layersReordered();
 }
 
 void QfBasemapService::setLayerEnabled( const QString &id, bool enabled )
@@ -623,12 +686,8 @@ void QfBasemapService::setLayerEnabled( const QString &id, bool enabled )
     removeEntryLayer( id );
   }
 
-  applyLayerOrder();
   saveSettings();
   emit layersChanged();
-  // The flat layer tree model does not support arbitrary moves and can end up
-  // with a stale row map after a sort; rebuild it after every add/remove.
-  emit layersReordered();
 }
 
 void QfBasemapService::setLayerOpacity( const QString &id, double opacity )
@@ -669,214 +728,6 @@ void QfBasemapService::applyLayerOpacity( const QString &id, double opacity, boo
     }
     return;
   }
-}
-
-void QfBasemapService::sortLayers()
-{
-  applyLayerOrder();
-}
-
-void QfBasemapService::applyLayerOrder()
-{
-  QgsProject *project = QgsProject::instance();
-  if ( !project || !project->layerTreeRoot() )
-  {
-    return;
-  }
-
-  QgsLayerTree *tree = project->layerTreeRoot();
-  QgsLayerTreeGroup *root = tree;
-  const QList<QgsLayerTreeNode *> children = root->children();
-
-  QList<QgsLayerTreeNode *> projectNodes;
-  QList<QgsLayerTreeNode *> basemapNodes;
-  QHash<QgsLayerTreeNode *, int> ranks;
-
-  for ( QgsLayerTreeNode *node : children )
-  {
-    QString id;
-    if ( node->nodeType() == QgsLayerTreeNode::NodeLayer )
-    {
-      if ( QgsLayerTreeLayer *layerNode = qobject_cast<QgsLayerTreeLayer *>( node ) )
-      {
-        if ( layerNode->layer() )
-        {
-          id = layerNode->layer()->customProperty( LAYER_ID_PROPERTY ).toString();
-        }
-      }
-    }
-
-    if ( id.isEmpty() )
-    {
-      projectNodes.append( node );
-    }
-    else
-    {
-      basemapNodes.append( node );
-      ranks.insert( node, basemapRank( id ) );
-    }
-  }
-
-  if ( basemapNodes.isEmpty() )
-  {
-    return;
-  }
-
-  // Top to bottom: project nodes (untouched order), labels, vector, ortho,
-  // imagery.
-  QList<QgsLayerTreeNode *> desired;
-  for ( int rank = 3; rank >= 0; --rank )
-  {
-    for ( QgsLayerTreeNode *node : basemapNodes )
-    {
-      if ( ranks.value( node ) == rank )
-      {
-        desired.append( node );
-      }
-    }
-  }
-
-  const QList<QgsLayerTreeNode *> expected = projectNodes + desired;
-  const bool orderCorrect = expected == children;
-
-  // A custom layer order overrides the tree order; the automatic order must be
-  // the one rendered. Only switch it off when there actually are basemaps to
-  // sort, otherwise projects without basemaps keep their custom order.
-  if ( tree->hasCustomLayerOrder() )
-  {
-    tree->setHasCustomLayerOrder( false );
-  }
-
-  if ( orderCorrect )
-  {
-    return;
-  }
-
-  // Move only the injected basemap layer nodes. Taking a group node would
-  // empty the group: QgsLayerTreeNode::removeChildrenPrivate() detaches the
-  // group's children and they are never re-added.
-  for ( QgsLayerTreeNode *node : basemapNodes )
-  {
-    root->takeChild( node );
-  }
-  for ( QgsLayerTreeNode *node : desired )
-  {
-    root->addChildNode( node );
-  }
-
-  emit layersReordered();
-}
-
-void QfBasemapService::raiseDrawingLayer( const QString &layerId )
-{
-  QgsProject *project = QgsProject::instance();
-  if ( !project || !project->layerTreeRoot() )
-  {
-    return;
-  }
-
-  if ( layerId.isEmpty() )
-  {
-    restoreDrawingLayer();
-    return;
-  }
-  if ( mRaisedLayerId == layerId )
-  {
-    return;
-  }
-
-  // Restore the previously raised layer before deciding whether the new one
-  // can be raised (it may be a raster or a basemap).
-  restoreDrawingLayer();
-
-  QgsLayerTree *tree = project->layerTreeRoot();
-  // A custom layer order drives the rendering; moving tree nodes would not put
-  // the layer on top and must not silently disable the user's order.
-  if ( tree->hasCustomLayerOrder() )
-  {
-    return;
-  }
-
-  QgsLayerTreeGroup *root = tree;
-  QgsLayerTreeLayer *layerNode = root->findLayer( layerId );
-  if ( !layerNode || !layerNode->layer() )
-  {
-    return;
-  }
-  // Never raise an injected basemap or a non vector layer.
-  if ( !layerNode->layer()->customProperty( LAYER_ID_PROPERTY ).toString().isEmpty() )
-  {
-    return;
-  }
-  if ( layerNode->layer()->type() != Qgis::LayerType::Vector )
-  {
-    return;
-  }
-
-  QgsLayerTreeGroup *parent = qobject_cast<QgsLayerTreeGroup *>( layerNode->parent() );
-  if ( !parent )
-  {
-    return;
-  }
-
-  const int index = parent->children().indexOf( layerNode );
-  if ( index < 0 )
-  {
-    return;
-  }
-  if ( index > 0 )
-  {
-    // Move only the layer node itself, never its group ancestor: taking a
-    // group node empties the group.
-    parent->takeChild( layerNode );
-    parent->insertChildNode( 0, layerNode );
-    emit layersReordered();
-  }
-
-  mRaisedLayerId = layerId;
-  mRaisedIndex = index;
-}
-
-void QfBasemapService::restoreDrawingLayer()
-{
-  if ( mRaisedLayerId.isEmpty() )
-  {
-    return;
-  }
-
-  const QString layerId = mRaisedLayerId;
-  const int originalIndex = mRaisedIndex;
-  mRaisedLayerId.clear();
-  mRaisedIndex = -1;
-
-  QgsProject *project = QgsProject::instance();
-  if ( !project || !project->layerTreeRoot() )
-  {
-    return;
-  }
-
-  QgsLayerTree *tree = project->layerTreeRoot();
-  QgsLayerTreeLayer *layerNode = tree->findLayer( layerId );
-  if ( !layerNode )
-  {
-    return;
-  }
-
-  QgsLayerTreeGroup *parent = qobject_cast<QgsLayerTreeGroup *>( layerNode->parent() );
-  if ( !parent )
-  {
-    return;
-  }
-
-  const int current = parent->children().indexOf( layerNode );
-  if ( current <= 0 || current == originalIndex )
-  {
-    return;
-  }
-
-  parent->takeChild( layerNode );
-  parent->insertChildNode( qBound( 0, originalIndex, static_cast<int>( parent->children().size() ) ), layerNode );
-  emit layersReordered();
 }
 
 void QfBasemapService::setBusy( bool busy )

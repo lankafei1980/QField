@@ -515,52 +515,6 @@ ApplicationWindow {
     mapSettings: mapCanvas.mapSettings
   }
 
-  // Keep the layer being edited on top of the layer tree. Its top level
-  // ancestor is raised while digitizing and restored when editing stops.
-  Connections {
-    target: stateMachine
-
-    function onStateChanged() {
-      if (stateMachine.state === "digitize") {
-        QfBasemapService.raiseDrawingLayer(projectInfo.activeLayer ? projectInfo.activeLayer.id : "");
-      } else {
-        QfBasemapService.restoreDrawingLayer();
-      }
-    }
-  }
-
-  Connections {
-    target: projectInfo
-
-    function onActiveLayerChanged() {
-      if (stateMachine.state === "digitize") {
-        QfBasemapService.raiseDrawingLayer(projectInfo.activeLayer ? projectInfo.activeLayer.id : "");
-      }
-    }
-  }
-
-  // Arbitrary layer tree moves invalidate the flat model's row map; rebuild it
-  // so the legend and the active layer stay consistent. Deferred so the
-  // rebuild happens after the C++ reorder has fully finished.
-  Connections {
-    target: QfBasemapService
-
-    function onLayersReordered() {
-      layerOrderRebuildTimer.restart();
-    }
-  }
-
-  Timer {
-    id: layerOrderRebuildTimer
-    interval: 0
-
-    onTriggered: {
-      if (!flatLayerTree.isFrozen) {
-        flatLayerTree.unfreeze(true);
-      }
-    }
-  }
-
   Timer {
     id: positionTimer
 
