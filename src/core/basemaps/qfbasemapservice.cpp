@@ -788,7 +788,7 @@ void QfBasemapService::raiseDrawingLayer( const QString &layerId )
 
   restoreDrawingLayer();
 
-  QgsLayerTreeGroup *parent = layerNode->parent();
+  QgsLayerTreeGroup *parent = qobject_cast<QgsLayerTreeGroup *>( layerNode->parent() );
   if ( !parent )
   {
     return;
@@ -837,7 +837,7 @@ void QfBasemapService::restoreDrawingLayer()
     return;
   }
 
-  QgsLayerTreeGroup *parent = layerNode->parent();
+  QgsLayerTreeGroup *parent = qobject_cast<QgsLayerTreeGroup *>( layerNode->parent() );
   if ( !parent )
   {
     return;
