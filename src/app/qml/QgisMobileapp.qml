@@ -1987,6 +1987,7 @@ ApplicationWindow {
     navigation: navigation
     positionSource: positionSource
     positioningSettings: positioningSettings
+    rtkSettings: rtkProjectSettings
 
     cogoOperationSettings.mapSettings: mapCanvas.mapSettings
   }
@@ -4944,6 +4945,7 @@ ApplicationWindow {
     }
 
     function onLoadProjectTriggered(path, name) {
+      digitizingToolbar.cancelRtkCapture();
       qfieldAuthRequestHandler.isProjectLoading = true;
       messageLogModel.suppress({
         "WFS": [""],

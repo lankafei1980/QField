@@ -40,6 +40,7 @@ Item {
   // QfPositioningPreciseView
   property alias positioningPreciseView: positioningPreciseView
   property QtObject positioningSettings
+  property var rtkSettings: undefined
   property QfPositioning positionSource
   property bool positioningPreciseEnabled: !elevationProfile.visible && !isNaN(navigation.distance) && navigation.isActive && (positioningSettings.alwaysShowPreciseView || (positioningPreciseView.hasAcceptableAccuracy && positioningPreciseView.projectDistance < positioningPreciseView.precision))
 
@@ -198,7 +199,7 @@ Item {
         height: Math.min(contentHeight, mainWindow.height / 3)
         visible: positioningInformationViewEnabled
         positionSource: controller.positionSource
-        antennaHeight: positioningSettings.antennaHeightActivated ? positioningSettings.antennaHeight : 0
+        antennaHeight: controller.rtkSettings ? controller.rtkSettings.antennaHeight : 0
       }
     }
 

@@ -84,6 +84,7 @@ QfPopup {
     result.solvedAt = new Date().toISOString();
     popup.rtkSettings.solution = result;
     popup.rtkSettings.correctionEnabled = true;
+    popup.syncFields();
     displayToast(qsTr("Correction solved: %1 points, RMS %2 m").arg(result.count).arg(Number(result.rms).toFixed(4)));
   }
 
@@ -113,6 +114,14 @@ QfPopup {
   }
 
   onAboutToShow: popup.syncFields()
+
+  ButtonGroup {
+    id: correctionModeGroup
+  }
+
+  ButtonGroup {
+    id: elevationModeGroup
+  }
 
   QfDialog {
     id: resetDialog
@@ -276,6 +285,7 @@ QfPopup {
 
         RadioButton {
           id: singleModeRadio
+          ButtonGroup.group: correctionModeGroup
           text: qsTr("Single-point translation correction")
           font: QfTheme.defaultFont
           Layout.fillWidth: true
@@ -289,6 +299,7 @@ QfPopup {
 
         RadioButton {
           id: multiModeRadio
+          ButtonGroup.group: correctionModeGroup
           text: qsTr("Multi-point four parameter correction")
           font: QfTheme.defaultFont
           Layout.fillWidth: true
@@ -310,6 +321,7 @@ QfPopup {
 
         RadioButton {
           id: followPlanarRadio
+          ButtonGroup.group: elevationModeGroup
           text: qsTr("Elevation follows the planar correction")
           font: QfTheme.defaultFont
           Layout.fillWidth: true
@@ -322,6 +334,7 @@ QfPopup {
 
         RadioButton {
           id: independentElevationRadio
+          ButtonGroup.group: elevationModeGroup
           text: qsTr("Independent elevation correction")
           font: QfTheme.defaultFont
           Layout.fillWidth: true

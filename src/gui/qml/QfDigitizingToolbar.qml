@@ -42,6 +42,20 @@ QfVisibilityFadingRow {
    */
   property var rtkSettings: undefined
 
+  onStateVisibleChanged: {
+    // Leaving the digitizing state (screen lock, geofence, project change...)
+    // must never leave a capture running in the background.
+    if (!stateVisible && rtkCapture && rtkCapture.collecting) {
+      rtkCapture.cancel();
+    }
+  }
+
+  function cancelRtkCapture() {
+    if (rtkCapture) {
+      rtkCapture.cancel();
+    }
+  }
+
   readonly property bool rtkPointMode: !!rubberbandModel && rubberbandModel.geometryType === Qgis.GeometryType.Point && digitizingToolbar.rtkSettings !== undefined && digitizingToolbar.rtkSettings !== null && !cogoEnabled
 
   spacing: 4
