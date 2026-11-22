@@ -489,27 +489,44 @@ Drawer {
         verticalAlignment: Text.AlignVCenter
         clip: true
 
-        QfButton {
-          id: toggleAllButton
-
+        Row {
           anchors {
             verticalCenter: parent.verticalCenter
             right: parent.right
             rightMargin: 10
           }
-          visible: legend.model.hasCollapsibleItems
+          spacing: 6
 
-          text: legend.model.isCollapsed ? qsTr('Expand All') : qsTr('Collapse All')
-          bgcolor: QfTheme.darkTheme ? QfTheme.mainBackgroundColorSemiOpaque : QfTheme.lightestGraySemiOpaque
-          color: QfTheme.mainTextColor
-          icon.source: legend.model.isCollapsed ? QfTheme.getThemeVectorIcon('ic_expand_all_24dp') : QfTheme.getThemeVectorIcon('ic_collapse_all_24dp')
-          icon.width: 14
-          icon.height: 14
-          font.pointSize: QfTheme.tinyFont.pointSize - 2
+          QfButton {
+            id: sortLayersButton
 
-          onClicked: {
-            legend.model.setAllCollapsed(!legend.model.isCollapsed);
-            projectInfo.saveLayerTreeState();
+            text: qsTr("Sort")
+            bgcolor: QfTheme.darkTheme ? QfTheme.mainBackgroundColorSemiOpaque : QfTheme.lightestGraySemiOpaque
+            color: QfTheme.mainTextColor
+            font.pointSize: QfTheme.tinyFont.pointSize - 2
+
+            onClicked: {
+              QfBasemapService.sortLayers();
+              displayToast(qsTr("Layer order sorted"));
+            }
+          }
+
+          QfButton {
+            id: toggleAllButton
+            visible: legend.model.hasCollapsibleItems
+
+            text: legend.model.isCollapsed ? qsTr('Expand All') : qsTr('Collapse All')
+            bgcolor: QfTheme.darkTheme ? QfTheme.mainBackgroundColorSemiOpaque : QfTheme.lightestGraySemiOpaque
+            color: QfTheme.mainTextColor
+            icon.source: legend.model.isCollapsed ? QfTheme.getThemeVectorIcon('ic_expand_all_24dp') : QfTheme.getThemeVectorIcon('ic_collapse_all_24dp')
+            icon.width: 14
+            icon.height: 14
+            font.pointSize: QfTheme.tinyFont.pointSize - 2
+
+            onClicked: {
+              legend.model.setAllCollapsed(!legend.model.isCollapsed);
+              projectInfo.saveLayerTreeState();
+            }
           }
         }
       }

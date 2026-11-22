@@ -17,6 +17,7 @@
 #include "qfbasemapservice.h"
 
 #include <QDebug>
+#include <QHash>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -30,6 +31,7 @@
 #include <QUrlQuery>
 #include <qgslayertree.h>
 #include <qgslayertreegroup.h>
+#include <qgslayertreelayer.h>
 #include <qgsnetworkaccessmanager.h>
 #include <qgsproject.h>
 #include <qgsrasterlayer.h>
@@ -66,6 +68,24 @@ namespace
 
   const QString JILIN_ONE_URL = QStringLiteral( "jl1/getMap/{z}/{x}/{-y}?mk=2d9bf902749f1630bc25fc720ba7c29f&tk=450daf001884ef53bf77ad46cf5b9e75" );
 
+  //! Rendering rank of the injected basemap layers (3 = on top of the others).
+  int basemapRank( const QString &id )
+  {
+    if ( id == QLatin1String( "tianditu-cva" ) || id == QLatin1String( "tianditu-cia" ) )
+    {
+      return 3; // vector / imagery labels
+    }
+    if ( id == QLatin1String( "tianditu-vec" ) )
+    {
+      return 2; // vector basemap
+    }
+    if ( id.startsWith( QLatin1String( "ortho:" ) ) )
+    {
+      return 1; // orthophotos
+    }
+    return 0; // satellite / imagery basemaps
+  }
+
 } // namespace
 
 QfBasemapService::QfBasemapService( QObject *parent )
@@ -78,6 +98,8 @@ QfBasemapService::QfBasemapService( QObject *parent )
   connect( QgsProject::instance(), &QgsProject::readProject, this, [this]() {
     // Layers live inside the project, they are gone as soon as another project
     // is loaded: put the user's selection back on top of the new project
+    mRaisedLayerId.clear();
+    mRaisedIndex = -1;
     QTimer::singleShot( 0, this, &QfBasemapService::restoreLayers );
   } );
 }
@@ -546,6 +568,8 @@ void QfBasemapService::restoreLayers()
   {
     addEntryLayer( id );
   }
+
+  applyLayerOrder();
 }
 
 void QfBasemapService::setLayerEnabled( const QString &id, bool enabled )
@@ -579,6 +603,7 @@ void QfBasemapService::setLayerEnabled( const QString &id, bool enabled )
     removeEntryLayer( id );
   }
 
+  applyLayerOrder();
   saveSettings();
   emit layersChanged();
 }
@@ -621,6 +646,191 @@ void QfBasemapService::applyLayerOpacity( const QString &id, double opacity, boo
     }
     return;
   }
+}
+
+void QfBasemapService::sortLayers()
+{
+  applyLayerOrder();
+}
+
+void QfBasemapService::applyLayerOrder()
+{
+  QgsProject *project = QgsProject::instance();
+  if ( !project || !project->layerTreeRoot() )
+  {
+    return;
+  }
+
+  QgsLayerTreeGroup *root = project->layerTreeRoot();
+  const QList<QgsLayerTreeNode *> children = root->children();
+
+  QList<QgsLayerTreeNode *> projectNodes;
+  QList<QgsLayerTreeNode *> basemapNodes;
+  QHash<QgsLayerTreeNode *, int> ranks;
+
+  for ( QgsLayerTreeNode *node : children )
+  {
+    QString id;
+    if ( node->nodeType() == QgsLayerTreeNode::NodeLayer )
+    {
+      if ( QgsLayerTreeLayer *layerNode = qobject_cast<QgsLayerTreeLayer *>( node ) )
+      {
+        if ( layerNode->layer() )
+        {
+          id = layerNode->layer()->customProperty( LAYER_ID_PROPERTY ).toString();
+        }
+      }
+    }
+
+    if ( id.isEmpty() )
+    {
+      projectNodes.append( node );
+    }
+    else
+    {
+      basemapNodes.append( node );
+      ranks.insert( node, basemapRank( id ) );
+    }
+  }
+
+  if ( basemapNodes.isEmpty() )
+  {
+    return;
+  }
+
+  // Top to bottom: project nodes (untouched order), labels, vector, ortho,
+  // imagery.
+  QList<QgsLayerTreeNode *> desired = projectNodes;
+  for ( int rank = 3; rank >= 0; --rank )
+  {
+    for ( QgsLayerTreeNode *node : basemapNodes )
+    {
+      if ( ranks.value( node ) == rank )
+      {
+        desired.append( node );
+      }
+    }
+  }
+
+  if ( desired == children )
+  {
+    return;
+  }
+
+  for ( QgsLayerTreeNode *node : children )
+  {
+    root->takeChild( node );
+  }
+  for ( int i = 0; i < desired.size(); ++i )
+  {
+    root->insertChildNode( i, desired[i] );
+  }
+}
+
+void QfBasemapService::raiseDrawingLayer( const QString &layerId )
+{
+  QgsProject *project = QgsProject::instance();
+  if ( !project || !project->layerTreeRoot() )
+  {
+    return;
+  }
+
+  if ( layerId.isEmpty() )
+  {
+    restoreDrawingLayer();
+    return;
+  }
+  if ( mRaisedLayerId == layerId )
+  {
+    return;
+  }
+
+  QgsLayerTreeGroup *root = project->layerTreeRoot();
+  QgsLayerTreeLayer *layerNode = root->findLayer( layerId );
+  if ( !layerNode || !layerNode->layer() )
+  {
+    return;
+  }
+  // Never raise an injected basemap or a non vector layer.
+  if ( !layerNode->layer()->customProperty( LAYER_ID_PROPERTY ).toString().isEmpty() )
+  {
+    return;
+  }
+  if ( layerNode->layer()->type() != Qgis::LayerType::Vector )
+  {
+    return;
+  }
+
+  restoreDrawingLayer();
+
+  QgsLayerTreeNode *top = layerNode;
+  while ( top->parent() && top->parent() != root )
+  {
+    top = top->parent();
+  }
+  if ( top->parent() != root )
+  {
+    return;
+  }
+
+  const int index = root->children().indexOf( top );
+  if ( index < 0 )
+  {
+    return;
+  }
+  if ( index > 0 )
+  {
+    root->takeChild( top );
+    root->insertChildNode( 0, top );
+  }
+
+  mRaisedLayerId = layerId;
+  mRaisedIndex = index;
+}
+
+void QfBasemapService::restoreDrawingLayer()
+{
+  if ( mRaisedLayerId.isEmpty() )
+  {
+    return;
+  }
+
+  const QString layerId = mRaisedLayerId;
+  const int originalIndex = mRaisedIndex;
+  mRaisedLayerId.clear();
+  mRaisedIndex = -1;
+
+  QgsProject *project = QgsProject::instance();
+  if ( !project || !project->layerTreeRoot() )
+  {
+    return;
+  }
+
+  QgsLayerTreeGroup *root = project->layerTreeRoot();
+  QgsLayerTreeLayer *layerNode = root->findLayer( layerId );
+  if ( !layerNode )
+  {
+    return;
+  }
+
+  QgsLayerTreeNode *top = layerNode;
+  while ( top->parent() && top->parent() != root )
+  {
+    top = top->parent();
+  }
+  if ( top->parent() != root )
+  {
+    return;
+  }
+
+  const int current = root->children().indexOf( top );
+  if ( current < 0 || current == originalIndex )
+  {
+    return;
+  }
+
+  root->takeChild( top );
+  root->insertChildNode( qBound( 0, originalIndex, static_cast<int>( root->children().size() ) ), top );
 }
 
 void QfBasemapService::setBusy( bool busy )

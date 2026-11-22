@@ -515,6 +515,30 @@ ApplicationWindow {
     mapSettings: mapCanvas.mapSettings
   }
 
+  // Keep the layer being edited on top of the layer tree. Its top level
+  // ancestor is raised while digitizing and restored when editing stops.
+  Connections {
+    target: stateMachine
+
+    function onStateChanged() {
+      if (stateMachine.state === "digitize") {
+        QfBasemapService.raiseDrawingLayer(projectInfo.activeLayer ? projectInfo.activeLayer.id : "");
+      } else {
+        QfBasemapService.restoreDrawingLayer();
+      }
+    }
+  }
+
+  Connections {
+    target: projectInfo
+
+    function onActiveLayerChanged() {
+      if (stateMachine.state === "digitize") {
+        QfBasemapService.raiseDrawingLayer(projectInfo.activeLayer ? projectInfo.activeLayer.id : "");
+      }
+    }
+  }
+
   Timer {
     id: positionTimer
 

@@ -87,6 +87,16 @@ class QfBasemapService : public QObject
     //! (used while the user drags the opacity slider)
     Q_INVOKABLE void setLayerOpacityLive( const QString &id, double opacity );
 
+    //! Sorts the injected basemap layers below the project layers: satellite
+    //! imagery at the bottom, then orthophotos, vector basemaps and labels.
+    Q_INVOKABLE void sortLayers();
+
+    //! Temporarily raises the top level ancestor of a layer being edited.
+    Q_INVOKABLE void raiseDrawingLayer( const QString &layerId );
+
+    //! Restores the layer raised by raiseDrawingLayer().
+    Q_INVOKABLE void restoreDrawingLayer();
+
     /**
      * Returns an encoded QGIS layer URI for one catalog entry, or an empty
      * string when the entry is not available (e.g. no Tianditu key yet). Used
@@ -123,6 +133,7 @@ class QfBasemapService : public QObject
     void fetchSysConfig();
     void fetchRasters();
     void applyLayerOpacity( const QString &id, double opacity, bool commit );
+    void applyLayerOrder();
     QString entryUri( const Entry &entry ) const;
     void addEntryLayer( const QString &id );
     void removeEntryLayer( const QString &id );
@@ -142,6 +153,10 @@ class QfBasemapService : public QObject
     QString mStatusMessage;
     bool mBusy = false;
     bool mGoogleEnabled = false;
+
+    // Layer temporarily raised while editing (restored when editing stops).
+    QString mRaisedLayerId;
+    int mRaisedIndex = -1;
 
     QList<Entry> mCatalog;
     QStringList mEnabledIds;
