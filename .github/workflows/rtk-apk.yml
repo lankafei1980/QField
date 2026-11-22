@@ -23,9 +23,9 @@ env:
   APP_PACKAGE_PREFIX: cn.zpyzs
   APP_PACKAGE_NAME: rtkapp
   APP_VERSION: v4.3.8
-  APP_VERSION_STR: 4.3.8 - 中文版 CN5
+  APP_VERSION_STR: 4.3.8 - 中文版 CN6
   APP_DEFAULT_LANGUAGE: zh
-  APK_VERSION_CODE: 5
+  APK_VERSION_CODE: 6
 
 jobs:
   build:
@@ -35,6 +35,13 @@ jobs:
     steps:
       - name: 🐣 Checkout
         uses: actions/checkout@v7.0.1
+
+      - name: 🧪 Translation and RTK unit checks
+        # Fast checks before the expensive configure/build steps.
+        run: |
+          python3 tools/i18n/check_ts.py i18n/qfield_zh.ts
+          python3 tools/i18n/check_missing_zh.py i18n/qfield_zh.ts src/app/qml src/gui/qml
+          node --test tools/dev/test_rtk_math.mjs
 
       - name: 🌾 Prepare variables
         shell: bash
