@@ -102,6 +102,22 @@ QfBasemapService::QfBasemapService( QObject *parent )
     mRaisedIndex = -1;
     QTimer::singleShot( 0, this, &QfBasemapService::restoreLayers );
   } );
+
+  // The QML singleton may be created after the start-up project has been
+  // loaded, in which case readProject() has already fired. Restore the enabled
+  // basemaps for the currently open project.
+  if ( !QgsProject::instance()->fileName().isEmpty() )
+  {
+    QTimer::singleShot( 0, this, &QfBasemapService::restoreLayers );
+  }
+
+  // Fetch the Tianditu key and the orthophoto catalogue when a session is
+  // remembered, so every enabled basemap (including orthophotos) is restored
+  // on app start without opening the settings page first.
+  if ( !mToken.isEmpty() )
+  {
+    QTimer::singleShot( 0, this, &QfBasemapService::refresh );
+  }
 }
 
 QString QfBasemapService::defaultServerUrl()
