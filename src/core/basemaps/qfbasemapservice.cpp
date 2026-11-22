@@ -661,7 +661,18 @@ void QfBasemapService::applyLayerOrder()
     return;
   }
 
-  QgsLayerTreeGroup *root = project->layerTreeRoot();
+  QgsLayerTree *tree = project->layerTreeRoot();
+  if ( !tree )
+  {
+    return;
+  }
+  // A custom layer order overrides the tree order; the automatic order must
+  // be the one rendered.
+  if ( tree->hasCustomLayerOrder() )
+  {
+    tree->setHasCustomLayerOrder( false );
+  }
+  QgsLayerTreeGroup *root = tree;
   const QList<QgsLayerTreeNode *> children = root->children();
 
   QList<QgsLayerTreeNode *> projectNodes;
@@ -745,7 +756,16 @@ void QfBasemapService::raiseDrawingLayer( const QString &layerId )
     return;
   }
 
-  QgsLayerTreeGroup *root = project->layerTreeRoot();
+  QgsLayerTree *tree = project->layerTreeRoot();
+  if ( !tree )
+  {
+    return;
+  }
+  if ( tree->hasCustomLayerOrder() )
+  {
+    tree->setHasCustomLayerOrder( false );
+  }
+  QgsLayerTreeGroup *root = tree;
   QgsLayerTreeLayer *layerNode = root->findLayer( layerId );
   if ( !layerNode || !layerNode->layer() )
   {
