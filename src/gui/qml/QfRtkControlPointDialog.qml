@@ -229,7 +229,7 @@ QfPopup {
         QfButton {
           Layout.fillWidth: true
           text: qsTr("Capture current coordinates")
-          enabled: capture.state !== "collecting"
+          enabled: capture.captureState !== "collecting"
           onClicked: capture.start()
         }
 

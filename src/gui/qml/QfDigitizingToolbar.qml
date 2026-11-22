@@ -246,9 +246,9 @@ QfVisibilityFadingRow {
       to: 1
       value: Math.max(0, Math.min(1, rtkCapture.progress))
       strokeWidth: 3
-      color: rtkCapture.state === "failed" ? QfTheme.errorColor : QfTheme.mainColor
+      color: rtkCapture.captureState === "failed" ? QfTheme.errorColor : QfTheme.mainColor
       backgroundColor: "#33ffffff"
-      visible: rtkCapture.state === "collecting" || rtkCapture.state === "succeeded" || rtkCapture.state === "failed"
+      visible: rtkCapture.captureState === "collecting" || rtkCapture.captureState === "succeeded" || rtkCapture.captureState === "failed"
     }
 
     /**

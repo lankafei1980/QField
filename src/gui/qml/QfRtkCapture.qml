@@ -29,7 +29,7 @@ Item {
   property bool applyProjectCorrection: true
 
   // "idle", "collecting", "succeeded", "failed"
-  property string state: "idle"
+  property string captureState: "idle"
   property int acceptedCount: 0
   property int targetCount: 5
   property real progress: 0
@@ -37,8 +37,8 @@ Item {
   property var lastPoint: undefined
   property bool lastForced: false
 
-  readonly property bool collecting: root.state === "collecting"
-  readonly property bool busy: root.state === "collecting"
+  readonly property bool collecting: root.captureState === "collecting"
+  readonly property bool busy: root.captureState === "collecting"
 
   // One accepted sample per second keeps the average meaningful and the ring visible.
   property int sampleIntervalMs: 1000
@@ -97,7 +97,7 @@ Item {
 
   function reset() {
     timeoutTimer.stop();
-    root.state = "idle";
+    root.captureState = "idle";
     root.samples = [];
     root.acceptedCount = 0;
     root.progress = 0;
@@ -108,7 +108,7 @@ Item {
   }
 
   function cancel() {
-    if (root.state === "collecting") {
+    if (root.captureState === "collecting") {
       root.reset();
     }
   }
@@ -118,7 +118,7 @@ Item {
     const active = root.positioning ? root.positioning.active : false;
     const ntripEnabled = root.positioning ? root.positioning.enableNtrip : false;
     const ntripState = root.positioning ? root.positioning.ntripState : 0;
-    const ntripCurrentness = root.positioning ? root.positioning.ntripCurrentness : true;
+    const ntripCurrentness = root.positioning && root.positioning.ntripCurrentness !== undefined ? root.positioning.ntripCurrentness : true;
     const ntripValid = root.positioning && root.positioning.ntripSettings ? root.positioning.ntripSettings.isValid : false;
     // QfAbstractGnssReceiver::NtripCorrection
     const supportsNtrip = root.positioning ? (root.positioning.deviceCapabilities & QfAbstractGnssReceiver.NtripCorrection) !== 0 : false;
@@ -146,7 +146,7 @@ Item {
     if (!root.positioning || !root.qualitySettings) {
       return false;
     }
-    if (root.state === "collecting") {
+    if (root.captureState === "collecting") {
       return false;
     }
 
@@ -166,7 +166,7 @@ Item {
     }
 
     root.targetCount = Math.max(1, root.qualitySettings.rtkSampleCount);
-    root.state = "collecting";
+    root.captureState = "collecting";
     timeoutTimer.interval = Math.max(5, root.qualitySettings.rtkSampleTimeoutSeconds) * 1000;
     timeoutTimer.start();
     root.tryCollect(true);
@@ -174,7 +174,7 @@ Item {
   }
 
   function tryCollect(immediate) {
-    if (root.state !== "collecting") {
+    if (root.captureState !== "collecting") {
       return;
     }
 
@@ -208,7 +208,7 @@ Item {
         return;
       }
       timeoutTimer.stop();
-      root.state = "succeeded";
+      root.captureState = "succeeded";
       root.lastPoint = point;
       root.lastForced = false;
       root.finished(point, false);
@@ -220,7 +220,7 @@ Item {
    * are any, otherwise the current position.
    */
   function forceCapture() {
-    if (root.state === "collecting") {
+    if (root.captureState === "collecting") {
       timeoutTimer.stop();
     }
     const point = root.buildPoint(root.samples.length > 0);
@@ -228,7 +228,7 @@ Item {
       root.failCapture("noposition");
       return;
     }
-    root.state = "succeeded";
+    root.captureState = "succeeded";
     root.lastPoint = point;
     root.lastForced = true;
     root.finished(point, true);
@@ -236,7 +236,7 @@ Item {
 
   function failCapture(reason) {
     timeoutTimer.stop();
-    root.state = "failed";
+    root.captureState = "failed";
     root.failureReason = reason;
     root.failed(reason);
   }
