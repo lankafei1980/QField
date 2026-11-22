@@ -5517,7 +5517,7 @@ While you can still view and use the project, it is strongly recommended to rese
     </message>
     <message>
         <source>%1 Do you want to force the capture?</source>
-        <translation>%1 是否强制采集？</translation>
+        <translation>%1。是否强制采集？</translation>
     </message>
     <message>
         <source>Go to settings</source>
@@ -7848,6 +7848,10 @@ The features geometries will be combined into feature &apos;%1&apos;, which will
     <message>
         <source>Connect the map service in Settings &gt; Basemaps to pick an online basemap here.</source>
         <translation>请先在「设置 → 底图」中连接地图服务，这里才能选择在线底图。</translation>
+    </message>
+    <message>
+        <source>Google satellite</source>
+        <translation>谷歌卫星影像</translation>
     </message>
 </context>
 <context>
@@ -10811,6 +10815,10 @@ to show actions</source>
         <source>Could not load "%1"</source>
         <translation>无法加载「%1」</translation>
     </message>
+    <message>
+        <source>Google satellite</source>
+        <translation>谷歌卫星影像</translation>
+    </message>
 </context>
 <context>
     <name>QfBasemapSettingsPanel</name>
@@ -10849,6 +10857,10 @@ to show actions</source>
     <message>
         <source>Orthophotos</source>
         <translation>正射影像</translation>
+    </message>
+    <message>
+        <source>Google satellite imagery is proxied by the map service and is intended for internal comparison only.</source>
+        <translation>谷歌卫星影像经服务端代理加载，仅供内部比对。</translation>
     </message>
 </context>
   <context>
