@@ -100,8 +100,11 @@ Page {
               spacing: 4
             }
 
-            Repeater {
+            Instantiator {
               model: QfBasemapService.creationLayers
+              onObjectAdded: (index, object) => {
+                object.parent = basemapProviders;
+              }
 
               QfProjectThumbnail {
                 width: 150
