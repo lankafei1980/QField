@@ -666,12 +666,6 @@ void QfBasemapService::applyLayerOrder()
   {
     return;
   }
-  // A custom layer order overrides the tree order; the automatic order must
-  // be the one rendered.
-  if ( tree->hasCustomLayerOrder() )
-  {
-    tree->setHasCustomLayerOrder( false );
-  }
   QgsLayerTreeGroup *root = tree;
   const QList<QgsLayerTreeNode *> children = root->children();
 
@@ -707,6 +701,14 @@ void QfBasemapService::applyLayerOrder()
   if ( basemapNodes.isEmpty() )
   {
     return;
+  }
+
+  // A custom layer order overrides the tree order; the automatic order must be
+  // the one rendered. Only switch it off when there actually are basemaps to
+  // sort, otherwise projects without basemaps keep their custom order.
+  if ( tree->hasCustomLayerOrder() )
+  {
+    tree->setHasCustomLayerOrder( false );
   }
 
   // Top to bottom: project nodes (untouched order), labels, vector, ortho,
