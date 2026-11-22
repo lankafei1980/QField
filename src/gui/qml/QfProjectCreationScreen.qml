@@ -128,7 +128,7 @@ Page {
                   onCanceled: parent.isPressed = false
                   onClicked: {
                     Qt.inputMethod.hide();
-                    basemapProviders.currentIndex = index;
+                    basemapProviders.currentIndex = parent.ObjectModel.index;
                   }
                 }
               }
