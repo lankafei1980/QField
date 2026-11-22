@@ -570,6 +570,10 @@ void QfBasemapService::restoreLayers()
   }
 
   applyLayerOrder();
+  // Even when the order was already correct, the flat layer tree model may not
+  // have tracked the injected layers (it does not support arbitrary moves and
+  // can be left with a stale row map): force a rebuild.
+  emit layersReordered();
 }
 
 void QfBasemapService::setLayerEnabled( const QString &id, bool enabled )
@@ -606,6 +610,9 @@ void QfBasemapService::setLayerEnabled( const QString &id, bool enabled )
   applyLayerOrder();
   saveSettings();
   emit layersChanged();
+  // The flat layer tree model does not support arbitrary moves and can end up
+  // with a stale row map after a sort; rebuild it after every add/remove.
+  emit layersReordered();
 }
 
 void QfBasemapService::setLayerOpacity( const QString &id, double opacity )
