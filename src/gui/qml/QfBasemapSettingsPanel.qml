@@ -193,14 +193,37 @@ Item {
         }
 
         Slider {
+          id: opacitySlider
           Layout.fillWidth: true
           visible: modelData.enabled
           from: 0
           to: 1
           value: modelData.opacity
-          onMoved: QfBasemapService.setLayerOpacity(modelData.id, value)
+          property bool ready: false
+          Component.onCompleted: ready = true
+          // Apply the opacity live without refreshing the catalog model: a
+          // model rebuild would destroy the slider while it is being dragged.
+          onMoved: QfBasemapService.setLayerOpacityLive(modelData.id, value)
+          // Persist and refresh the model once the drag is over.
+          onPressedChanged: {
+            if (ready && !pressed) {
+              QfBasemapService.setLayerOpacity(modelData.id, value);
+            }
+          }
         }
       }
+    }
+
+    Label {
+      Layout.leftMargin: 20
+      Layout.rightMargin: 20
+      Layout.fillWidth: true
+      Layout.topMargin: 6
+      visible: QfBasemapService.googleAvailable
+      text: qsTr("Google satellite imagery is proxied by the map service and is intended for internal comparison only.")
+      font: QfTheme.tipFont
+      color: QfTheme.secondaryTextColor
+      wrapMode: Text.WordWrap
     }
   }
 }

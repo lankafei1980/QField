@@ -48,6 +48,7 @@ class QfBasemapService : public QObject
     Q_PROPERTY( bool busy READ busy NOTIFY busyChanged )
     Q_PROPERTY( QString statusMessage READ statusMessage NOTIFY statusMessageChanged )
     Q_PROPERTY( QVariantList layers READ layers NOTIFY layersChanged )
+    Q_PROPERTY( bool googleAvailable READ googleAvailable NOTIFY layersChanged )
 
   public:
     explicit QfBasemapService( QObject *parent = nullptr );
@@ -65,6 +66,7 @@ class QfBasemapService : public QObject
     bool busy() const { return mBusy; }
     QString statusMessage() const { return mStatusMessage; }
     QVariantList layers() const;
+    bool googleAvailable() const { return mGoogleEnabled; }
 
     //! Authenticates against the configured server and loads its catalogue
     Q_INVOKABLE void login();
@@ -78,8 +80,12 @@ class QfBasemapService : public QObject
     //! Adds or removes one catalog entry from the map
     Q_INVOKABLE void setLayerEnabled( const QString &id, bool enabled );
 
-    //! Sets the opacity (0..1) of one catalog entry
+    //! Sets the opacity (0..1) of one catalog entry and persists it
     Q_INVOKABLE void setLayerOpacity( const QString &id, double opacity );
+
+    //! Updates the opacity of one catalog entry without persisting or notifying
+    //! (used while the user drags the opacity slider)
+    Q_INVOKABLE void setLayerOpacityLive( const QString &id, double opacity );
 
     /**
      * Returns an encoded QGIS layer URI for one catalog entry, or an empty
@@ -116,6 +122,7 @@ class QfBasemapService : public QObject
     void rebuildCatalog();
     void fetchSysConfig();
     void fetchRasters();
+    void applyLayerOpacity( const QString &id, double opacity, bool commit );
     QString entryUri( const Entry &entry ) const;
     void addEntryLayer( const QString &id );
     void removeEntryLayer( const QString &id );
@@ -134,6 +141,7 @@ class QfBasemapService : public QObject
     QString mTiandituKey;
     QString mStatusMessage;
     bool mBusy = false;
+    bool mGoogleEnabled = false;
 
     QList<Entry> mCatalog;
     QStringList mEnabledIds;

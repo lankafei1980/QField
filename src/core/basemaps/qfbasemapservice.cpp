@@ -20,6 +20,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonValue>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QSettings>
@@ -43,6 +44,7 @@ namespace
   const QString PASSWORD_KEY = QStringLiteral( "/basemap/password" );
   const QString TOKEN_KEY = QStringLiteral( "/basemap/token" );
   const QString TIANDITU_KEY = QStringLiteral( "/basemap/tiandituKey" );
+  const QString GOOGLE_ENABLED_KEY = QStringLiteral( "/basemap/googleEnabled" );
   const QString ENABLED_KEY = QStringLiteral( "/basemap/enabled" );
   const QString OPACITY_KEY = QStringLiteral( "/basemap/opacities" );
 
@@ -148,6 +150,7 @@ void QfBasemapService::loadSettings()
   mPassword = settings.value( PASSWORD_KEY ).toString();
   mToken = settings.value( TOKEN_KEY ).toString();
   mTiandituKey = settings.value( TIANDITU_KEY ).toString();
+  mGoogleEnabled = settings.value( GOOGLE_ENABLED_KEY, false ).toBool();
   mEnabledIds = settings.value( ENABLED_KEY ).toStringList();
 }
 
@@ -159,6 +162,7 @@ void QfBasemapService::saveSettings() const
   settings.setValue( PASSWORD_KEY, mPassword );
   settings.setValue( TOKEN_KEY, mToken );
   settings.setValue( TIANDITU_KEY, mTiandituKey );
+  settings.setValue( GOOGLE_ENABLED_KEY, mGoogleEnabled );
   settings.setValue( ENABLED_KEY, mEnabledIds );
 
   QVariantMap opacities;
@@ -180,7 +184,7 @@ void QfBasemapService::rebuildBaseEntryTemplates()
     }
   }
 
-  auto appendBase = [this]( const QString &id, const QString &name, const QString &path ) {
+  auto appendBase = [this]( const QString &id, const QString &name, const QString &path, int zmax = 18 ) {
     Entry entry;
     entry.id = id;
     entry.name = name;
@@ -189,7 +193,7 @@ void QfBasemapService::rebuildBaseEntryTemplates()
     {
       entry.url = mServerUrl + '/' + path;
     }
-    entry.zmax = 18;
+    entry.zmax = zmax;
     entry.enabled = mEnabledIds.contains( id );
     entry.opacity = 1.0;
     mCatalog.append( entry );
@@ -208,6 +212,14 @@ void QfBasemapService::rebuildBaseEntryTemplates()
   }
 
   appendBase( QStringLiteral( "jl1-img" ), tr( "Jilin-1 satellite" ), JILIN_ONE_URL );
+
+  // Google satellite imagery is proxied by the NEWGIS server (same-origin
+  // /gmap). It is gated by the server side "basemap_google_enabled" switch.
+  if ( mGoogleEnabled )
+  {
+    appendBase( QStringLiteral( "google-img" ), tr( "Google satellite" ),
+                QStringLiteral( "gmap/vt?lyrs=s&x={x}&y={y}&z={z}" ), 19 );
+  }
 
   for ( int i = mCatalog.size() - 1; i >= 0; i-- )
   {
@@ -335,12 +347,27 @@ void QfBasemapService::getJson( const QString &path, const std::function<void( c
 void QfBasemapService::fetchSysConfig()
 {
   getJson( QStringLiteral( "/api/sys-config" ), [this]( const QJsonObject &object ) {
-    const QString key = object.value( QStringLiteral( "data" ) ).toObject().value( QStringLiteral( "tianditu_tk" ) ).toString();
-    if ( key.isEmpty() || key == mTiandituKey )
+    const QJsonObject data = object.value( QStringLiteral( "data" ) ).toObject();
+    const QString key = data.value( QStringLiteral( "tianditu_tk" ) ).toString();
+    const QJsonValue googleValue = data.value( QStringLiteral( "basemap_google_enabled" ) );
+    const bool googleEnabled = googleValue.isBool() ? googleValue.toBool() : googleValue.toString().compare( QStringLiteral( "true" ), Qt::CaseInsensitive ) == 0;
+
+    bool changed = false;
+    if ( !key.isEmpty() && key != mTiandituKey )
+    {
+      mTiandituKey = key;
+      changed = true;
+    }
+    if ( googleEnabled != mGoogleEnabled )
+    {
+      mGoogleEnabled = googleEnabled;
+      changed = true;
+    }
+    if ( !changed )
     {
       return;
     }
-    mTiandituKey = key;
+
     saveSettings();
     rebuildBaseEntryTemplates();
     rebuildCatalog();
@@ -558,6 +585,18 @@ void QfBasemapService::setLayerEnabled( const QString &id, bool enabled )
 
 void QfBasemapService::setLayerOpacity( const QString &id, double opacity )
 {
+  applyLayerOpacity( id, opacity, true );
+}
+
+void QfBasemapService::setLayerOpacityLive( const QString &id, double opacity )
+{
+  // While the user is dragging the slider the catalog model must not be
+  // rebuilt, otherwise the slider delegate is destroyed mid drag.
+  applyLayerOpacity( id, opacity, false );
+}
+
+void QfBasemapService::applyLayerOpacity( const QString &id, double opacity, bool commit )
+{
   opacity = qBound( 0.0, opacity, 1.0 );
   for ( Entry &entry : mCatalog )
   {
@@ -575,8 +614,11 @@ void QfBasemapService::setLayerOpacity( const QString &id, double opacity )
         candidate->setOpacity( opacity );
       }
     }
-    saveSettings();
-    emit layersChanged();
+    if ( commit )
+    {
+      saveSettings();
+      emit layersChanged();
+    }
     return;
   }
 }

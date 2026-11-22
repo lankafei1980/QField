@@ -292,6 +292,22 @@ Page {
     }
   }
 
+  // Refresh the online basemap catalogue when the Basemaps tab is shown, so
+  // server-side changes (Tianditu key, Google switch, orthophotos) appear
+  // without asking the user to press "Reload layers" manually.
+  function refreshBasemapsIfNeeded() {
+    if (currentPanel === 3 && QfBasemapService.loggedIn) {
+      QfBasemapService.refresh();
+    }
+  }
+
+  onCurrentPanelChanged: refreshBasemapsIfNeeded()
+  onVisibleChanged: {
+    if (visible) {
+      refreshBasemapsIfNeeded();
+    }
+  }
+
   Rectangle {
     color: QfTheme.mainBackgroundColor
     anchors.fill: parent

@@ -400,6 +400,38 @@ Page {
                 }
               }
             }
+            QfProjectThumbnail {
+              visible: QfBasemapService.googleAvailable && QfBasemapService.creationUri("google-img") !== ""
+              width: visible ? 150 : 0
+              implicitHeight: 95
+              radius: 4
+              bgColor: QfTheme.groupBoxSurfaceColor
+              previewImageSource: ""
+              projectTitle.text: qsTr("Google satellite")
+              showType: false
+              selected: basemapProviders.currentItem === this
+              fillHeight: true
+              showCustomizeIcon: false
+
+              property Component settings: Component {
+                Item {
+                  property string name: "custom"
+                  property string customSource: QfBasemapService.creationUri("google-img")
+                  property string customProvider: "wms"
+                }
+              }
+
+              MouseArea {
+                anchors.fill: parent
+                onPressed: parent.isPressed = true
+                onReleased: parent.isPressed = false
+                onCanceled: parent.isPressed = false
+                onClicked: {
+                  Qt.inputMethod.hide();
+                  basemapProviders.currentIndex = parent.ObjectModel.index;
+                }
+              }
+            }
           }
 
           Label {
