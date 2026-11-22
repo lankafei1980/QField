@@ -534,6 +534,11 @@ QString QfProjectUtils::createProject( const QVariantMap &options, const QfGnssP
   QgsRectangle createdProjectExtent;
   if ( basemapLayer && basemapLayer->isValid() )
   {
+    // Tag the project embedded basemap so the runtime basemap service can keep
+    // it at the bottom of the basemap block and stack the enabled system
+    // basemaps above it instead of treating it as a project layer covering
+    // them.
+    basemapLayer->setCustomProperty( QStringLiteral( "qfieldProjectBasemap" ), true );
     createdProjectLayers << basemapLayer;
     createdProject->setCrs( basemapLayer->crs() );
     createdProjectExtent = basemapExtent;

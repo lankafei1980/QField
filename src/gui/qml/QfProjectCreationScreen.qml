@@ -100,6 +100,36 @@ Page {
               spacing: 4
             }
 
+            Repeater {
+              model: QfBasemapService.creationLayers
+
+              QfProjectThumbnail {
+                width: 150
+                implicitHeight: 95
+                radius: 4
+                bgColor: QfTheme.groupBoxSurfaceColor
+                previewImageSource: ""
+                projectTitle.text: modelData.name
+                showType: false
+                selected: basemapProviders.currentItem === this
+                fillHeight: true
+                showCustomizeIcon: false
+
+                property string basemapServiceId: modelData.id
+                property string basemapServiceUri: modelData.uri
+
+                MouseArea {
+                  anchors.fill: parent
+                  onPressed: parent.isPressed = true
+                  onReleased: parent.isPressed = false
+                  onCanceled: parent.isPressed = false
+                  onClicked: {
+                    Qt.inputMethod.hide();
+                    basemapProviders.currentIndex = index;
+                  }
+                }
+              }
+            }
             QfProjectThumbnail {
               width: 150
               implicitHeight: 95
@@ -305,137 +335,10 @@ Page {
                 }
               }
             }
-            QfProjectThumbnail {
-              visible: QfBasemapService.creationUri("tianditu-vec") !== ""
-              width: visible ? 150 : 0
-              implicitHeight: 95
-              radius: 4
-              bgColor: QfTheme.groupBoxSurfaceColor
-              previewImageSource: ""
-              projectTitle.text: qsTr("Tianditu vector")
-              showType: false
-              selected: basemapProviders.currentItem === this
-              fillHeight: true
-              showCustomizeIcon: false
-
-              property Component settings: Component {
-                Item {
-                  property string name: "custom"
-                  property string customSource: QfBasemapService.creationUri("tianditu-vec")
-                  property string customProvider: "wms"
-                }
-              }
-
-              MouseArea {
-                anchors.fill: parent
-                onPressed: parent.isPressed = true
-                onReleased: parent.isPressed = false
-                onCanceled: parent.isPressed = false
-                onClicked: {
-                  Qt.inputMethod.hide();
-                  basemapProviders.currentIndex = parent.ObjectModel.index;
-                }
-              }
-            }
-            QfProjectThumbnail {
-              visible: QfBasemapService.creationUri("tianditu-img") !== ""
-              width: visible ? 150 : 0
-              implicitHeight: 95
-              radius: 4
-              bgColor: QfTheme.groupBoxSurfaceColor
-              previewImageSource: ""
-              projectTitle.text: qsTr("Tianditu imagery")
-              showType: false
-              selected: basemapProviders.currentItem === this
-              fillHeight: true
-              showCustomizeIcon: false
-
-              property Component settings: Component {
-                Item {
-                  property string name: "custom"
-                  property string customSource: QfBasemapService.creationUri("tianditu-img")
-                  property string customProvider: "wms"
-                }
-              }
-
-              MouseArea {
-                anchors.fill: parent
-                onPressed: parent.isPressed = true
-                onReleased: parent.isPressed = false
-                onCanceled: parent.isPressed = false
-                onClicked: {
-                  Qt.inputMethod.hide();
-                  basemapProviders.currentIndex = parent.ObjectModel.index;
-                }
-              }
-            }
-            QfProjectThumbnail {
-              width: 150
-              implicitHeight: 95
-              radius: 4
-              bgColor: QfTheme.groupBoxSurfaceColor
-              previewImageSource: ""
-              projectTitle.text: qsTr("Jilin-1 satellite")
-              showType: false
-              selected: basemapProviders.currentItem === this
-              fillHeight: true
-              showCustomizeIcon: false
-
-              property Component settings: Component {
-                Item {
-                  property string name: "custom"
-                  property string customSource: QfBasemapService.creationUri("jl1-img")
-                  property string customProvider: "wms"
-                }
-              }
-
-              MouseArea {
-                anchors.fill: parent
-                onPressed: parent.isPressed = true
-                onReleased: parent.isPressed = false
-                onCanceled: parent.isPressed = false
-                onClicked: {
-                  Qt.inputMethod.hide();
-                  basemapProviders.currentIndex = parent.ObjectModel.index;
-                }
-              }
-            }
-            QfProjectThumbnail {
-              visible: QfBasemapService.googleAvailable && QfBasemapService.creationUri("google-img") !== ""
-              width: visible ? 150 : 0
-              implicitHeight: 95
-              radius: 4
-              bgColor: QfTheme.groupBoxSurfaceColor
-              previewImageSource: ""
-              projectTitle.text: qsTr("Google satellite")
-              showType: false
-              selected: basemapProviders.currentItem === this
-              fillHeight: true
-              showCustomizeIcon: false
-
-              property Component settings: Component {
-                Item {
-                  property string name: "custom"
-                  property string customSource: QfBasemapService.creationUri("google-img")
-                  property string customProvider: "wms"
-                }
-              }
-
-              MouseArea {
-                anchors.fill: parent
-                onPressed: parent.isPressed = true
-                onReleased: parent.isPressed = false
-                onCanceled: parent.isPressed = false
-                onClicked: {
-                  Qt.inputMethod.hide();
-                  basemapProviders.currentIndex = parent.ObjectModel.index;
-                }
-              }
-            }
           }
 
           Label {
-            visible: QfBasemapService.creationUri("tianditu-vec") === ""
+            visible: QfBasemapService.creationLayers.length === 0
             width: parent.width
             text: qsTr("Connect the map service in Settings > Basemaps to pick an online basemap here.")
             font: QfTheme.tipFont
@@ -446,7 +349,7 @@ Page {
           Loader {
             id: basemapLoader
             width: parent.width
-            sourceComponent: basemapProviders.currentItem ? basemapProviders.currentItem.settings : null
+            sourceComponent: (basemapProviders.currentItem && !basemapProviders.currentItem.basemapServiceId) ? basemapProviders.currentItem.settings : null
           }
         }
       }
@@ -695,12 +598,15 @@ Page {
         if (projectName.text === "") {
           projectName.text = qsTr("My Project");
         }
+        const basemapItem = basemapProviders.currentItem;
+        const serviceBasemapId = basemapItem && basemapItem.basemapServiceId ? basemapItem.basemapServiceId : "";
+        const serviceBasemapUri = basemapItem && basemapItem.basemapServiceUri ? basemapItem.basemapServiceUri : "";
         let projectConfig = {
           "title": projectName.text,
-          "basemap": basemapLoader.item ? basemapLoader.item.name || "" : "colorful",
-          "basemap_custom_source": basemapLoader.item ? basemapLoader.item.customSource || "" : "",
-          "basemap_custom_provider": basemapLoader.item ? basemapLoader.item.customProvider || "" : "",
-          "basemap_custom_extent": basemapLoader.item ? basemapLoader.item.customExtent || "" : "",
+          "basemap": serviceBasemapId !== "" ? "custom" : (basemapLoader.item ? basemapLoader.item.name || "" : "colorful"),
+          "basemap_custom_source": serviceBasemapId !== "" ? serviceBasemapUri : (basemapLoader.item ? basemapLoader.item.customSource || "" : ""),
+          "basemap_custom_provider": serviceBasemapId !== "" ? "wms" : (basemapLoader.item ? basemapLoader.item.customProvider || "" : ""),
+          "basemap_custom_extent": serviceBasemapId !== "" ? "" : (basemapLoader.item ? basemapLoader.item.customExtent || "" : ""),
           "notes": takeNotesGroupBox.checked,
           "camera_capture": takeMediaCheckBox.checked,
           "notes_on_lines_polygons": notesOnLinesPolygonsCheckBox.checked,
