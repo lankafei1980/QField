@@ -91,7 +91,7 @@ class QfBasemapService : public QObject
     //! imagery at the bottom, then orthophotos, vector basemaps and labels.
     Q_INVOKABLE void sortLayers();
 
-    //! Temporarily raises the top level ancestor of a layer being edited.
+    //! Temporarily raises a layer being edited within its parent group.
     Q_INVOKABLE void raiseDrawingLayer( const QString &layerId );
 
     //! Restores the layer raised by raiseDrawingLayer().
@@ -113,6 +113,10 @@ class QfBasemapService : public QObject
     void busyChanged();
     void statusMessageChanged();
     void layersChanged();
+
+    //! Emitted after a layer tree reorder, so the flat layer tree model can be
+    //! rebuilt (its row map does not support arbitrary moves).
+    void layersReordered();
 
   private:
     struct Entry

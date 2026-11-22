@@ -539,6 +539,28 @@ ApplicationWindow {
     }
   }
 
+  // Arbitrary layer tree moves invalidate the flat model's row map; rebuild it
+  // so the legend and the active layer stay consistent. Deferred so the
+  // rebuild happens after the C++ reorder has fully finished.
+  Connections {
+    target: QfBasemapService
+
+    function onLayersReordered() {
+      layerOrderRebuildTimer.restart();
+    }
+  }
+
+  Timer {
+    id: layerOrderRebuildTimer
+    interval: 0
+
+    onTriggered: {
+      if (!flatLayerTree.isFrozen) {
+        flatLayerTree.unfreeze(true);
+      }
+    }
+  }
+
   Timer {
     id: positionTimer
 
@@ -5729,6 +5751,16 @@ ApplicationWindow {
     parent: dashBoard.opened ? Overlay.overlay : mainWindow.contentItem
     z: 10000 // 1000s are embedded feature forms, user a higher value to insure the dialog will always show above embedded feature forms
     state: iface.hasProjectOnLaunch() ? "visible" : "hidden"
+  }
+
+  Component.onCompleted: {
+    // The coordinate cursor is locked by default (RTK point work). Migrate
+    // existing installations once; turning the lock off in the GNSS menu is
+    // remembered afterwards.
+    if (!positioningSettings.value("/qfield/coordinateCursorLockMigrated", false)) {
+      positioningSettings.positioningCoordinateLock = true;
+      positioningSettings.setValue("/qfield/coordinateCursorLockMigrated", true);
+    }
   }
 
   property bool closeAlreadyRequested: false

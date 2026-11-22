@@ -662,10 +662,6 @@ void QfBasemapService::applyLayerOrder()
   }
 
   QgsLayerTree *tree = project->layerTreeRoot();
-  if ( !tree )
-  {
-    return;
-  }
   QgsLayerTreeGroup *root = tree;
   const QList<QgsLayerTreeNode *> children = root->children();
 
@@ -703,17 +699,9 @@ void QfBasemapService::applyLayerOrder()
     return;
   }
 
-  // A custom layer order overrides the tree order; the automatic order must be
-  // the one rendered. Only switch it off when there actually are basemaps to
-  // sort, otherwise projects without basemaps keep their custom order.
-  if ( tree->hasCustomLayerOrder() )
-  {
-    tree->setHasCustomLayerOrder( false );
-  }
-
   // Top to bottom: project nodes (untouched order), labels, vector, ortho,
   // imagery.
-  QList<QgsLayerTreeNode *> desired = projectNodes;
+  QList<QgsLayerTreeNode *> desired;
   for ( int rank = 3; rank >= 0; --rank )
   {
     for ( QgsLayerTreeNode *node : basemapNodes )
@@ -725,19 +713,35 @@ void QfBasemapService::applyLayerOrder()
     }
   }
 
-  if ( desired == children )
+  const QList<QgsLayerTreeNode *> expected = projectNodes + desired;
+  const bool orderCorrect = expected == children;
+
+  // A custom layer order overrides the tree order; the automatic order must be
+  // the one rendered. Only switch it off when there actually are basemaps to
+  // sort, otherwise projects without basemaps keep their custom order.
+  if ( tree->hasCustomLayerOrder() )
+  {
+    tree->setHasCustomLayerOrder( false );
+  }
+
+  if ( orderCorrect )
   {
     return;
   }
 
-  for ( QgsLayerTreeNode *node : children )
+  // Move only the injected basemap layer nodes. Taking a group node would
+  // empty the group: QgsLayerTreeNode::removeChildrenPrivate() detaches the
+  // group's children and they are never re-added.
+  for ( QgsLayerTreeNode *node : basemapNodes )
   {
     root->takeChild( node );
   }
-  for ( int i = 0; i < desired.size(); ++i )
+  for ( QgsLayerTreeNode *node : desired )
   {
-    root->insertChildNode( i, desired[i] );
+    root->addChildNode( node );
   }
+
+  emit layersReordered();
 }
 
 void QfBasemapService::raiseDrawingLayer( const QString &layerId )
@@ -759,14 +763,13 @@ void QfBasemapService::raiseDrawingLayer( const QString &layerId )
   }
 
   QgsLayerTree *tree = project->layerTreeRoot();
-  if ( !tree )
+  // A custom layer order drives the rendering; moving tree nodes would not put
+  // the layer on top and must not silently disable the user's order.
+  if ( tree->hasCustomLayerOrder() )
   {
     return;
   }
-  if ( tree->hasCustomLayerOrder() )
-  {
-    tree->setHasCustomLayerOrder( false );
-  }
+
   QgsLayerTreeGroup *root = tree;
   QgsLayerTreeLayer *layerNode = root->findLayer( layerId );
   if ( !layerNode || !layerNode->layer() )
@@ -785,25 +788,24 @@ void QfBasemapService::raiseDrawingLayer( const QString &layerId )
 
   restoreDrawingLayer();
 
-  QgsLayerTreeNode *top = layerNode;
-  while ( top->parent() && top->parent() != root )
-  {
-    top = top->parent();
-  }
-  if ( top->parent() != root )
+  QgsLayerTreeGroup *parent = layerNode->parent();
+  if ( !parent )
   {
     return;
   }
 
-  const int index = root->children().indexOf( top );
+  const int index = parent->children().indexOf( layerNode );
   if ( index < 0 )
   {
     return;
   }
   if ( index > 0 )
   {
-    root->takeChild( top );
-    root->insertChildNode( 0, top );
+    // Move only the layer node itself, never its group ancestor: taking a
+    // group node empties the group.
+    parent->takeChild( layerNode );
+    parent->insertChildNode( 0, layerNode );
+    emit layersReordered();
   }
 
   mRaisedLayerId = layerId;
@@ -828,31 +830,28 @@ void QfBasemapService::restoreDrawingLayer()
     return;
   }
 
-  QgsLayerTreeGroup *root = project->layerTreeRoot();
-  QgsLayerTreeLayer *layerNode = root->findLayer( layerId );
+  QgsLayerTree *tree = project->layerTreeRoot();
+  QgsLayerTreeLayer *layerNode = tree->findLayer( layerId );
   if ( !layerNode )
   {
     return;
   }
 
-  QgsLayerTreeNode *top = layerNode;
-  while ( top->parent() && top->parent() != root )
-  {
-    top = top->parent();
-  }
-  if ( top->parent() != root )
+  QgsLayerTreeGroup *parent = layerNode->parent();
+  if ( !parent )
   {
     return;
   }
 
-  const int current = root->children().indexOf( top );
-  if ( current < 0 || current == originalIndex )
+  const int current = parent->children().indexOf( layerNode );
+  if ( current <= 0 || current == originalIndex )
   {
     return;
   }
 
-  root->takeChild( top );
-  root->insertChildNode( qBound( 0, originalIndex, static_cast<int>( root->children().size() ) ), top );
+  parent->takeChild( layerNode );
+  parent->insertChildNode( qBound( 0, originalIndex, static_cast<int>( parent->children().size() ) ), layerNode );
+  emit layersReordered();
 }
 
 void QfBasemapService::setBusy( bool busy )

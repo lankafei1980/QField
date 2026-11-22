@@ -13,7 +13,7 @@ Settings {
   }
 
   property bool positioningActivated: false
-  property bool positioningCoordinateLock: false
+  property bool positioningCoordinateLock: true
 
   property string positioningDevice: ""
   property string positioningDeviceName: qsTr("Internal device")
