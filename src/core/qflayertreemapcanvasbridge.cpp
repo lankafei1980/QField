@@ -38,6 +38,11 @@ QfLayerTreeMapCanvasBridge::QfLayerTreeMapCanvasBridge( QfFlatLayerTreeModel *mo
   , mHasLayersLoaded( !mRoot->findLayers().isEmpty() )
 {
   connect( mRoot, &QgsLayerTreeGroup::visibilityChanged, this, &QfLayerTreeMapCanvasBridge::nodeVisibilityChanged );
+  // Reordering nodes in the layer tree (e.g. moving the basemaps below the
+  // project layers) does not add or remove project layers, so it has to
+  // refresh the canvas layer order explicitly.
+  connect( mRoot, &QgsLayerTreeGroup::addedChildren, this, &QfLayerTreeMapCanvasBridge::layersChanged );
+  connect( mRoot, &QgsLayerTreeGroup::removedChildren, this, &QfLayerTreeMapCanvasBridge::layersChanged );
   connect( model, &QfFlatLayerTreeModel::mapThemeChanged, this, &QfLayerTreeMapCanvasBridge::mapThemeChanged );
   connect( model, &QfFlatLayerTreeModel::layersAdded, this, &QfLayerTreeMapCanvasBridge::layersChanged );
   connect( model, &QfFlatLayerTreeModel::layersRemoved, this, &QfLayerTreeMapCanvasBridge::layersChanged );
