@@ -762,6 +762,10 @@ void QfBasemapService::raiseDrawingLayer( const QString &layerId )
     return;
   }
 
+  // Restore the previously raised layer before deciding whether the new one
+  // can be raised (it may be a raster or a basemap).
+  restoreDrawingLayer();
+
   QgsLayerTree *tree = project->layerTreeRoot();
   // A custom layer order drives the rendering; moving tree nodes would not put
   // the layer on top and must not silently disable the user's order.
@@ -785,8 +789,6 @@ void QfBasemapService::raiseDrawingLayer( const QString &layerId )
   {
     return;
   }
-
-  restoreDrawingLayer();
 
   QgsLayerTreeGroup *parent = qobject_cast<QgsLayerTreeGroup *>( layerNode->parent() );
   if ( !parent )
