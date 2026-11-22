@@ -5446,6 +5446,14 @@ While you can still view and use the project, it is strongly recommended to rese
         <source>The project is read-only.</source>
         <translation>该工程为只读。</translation>
     </message>
+    <message>
+        <source>Sort</source>
+        <translation>整理</translation>
+    </message>
+    <message>
+        <source>Layer order sorted</source>
+        <translation>图层顺序已整理</translation>
+    </message>
 </context>
 <context>
     <name>QfDialog</name>
