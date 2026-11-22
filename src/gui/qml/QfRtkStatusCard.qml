@@ -9,6 +9,10 @@ import "QfRtkStatus.js" as RtkStatus
  * correction state and the project pole height. Tapping it opens the correction
  * configuration dialog.
  *
+ * The card intentionally has no background: it follows the map label style of
+ * the scale bar (dark text with a white outline), so it stays readable on both
+ * bright and dark basemaps.
+ *
  * \ingroup qml_gui
  */
 Rectangle {
@@ -33,15 +37,14 @@ Rectangle {
     }
   }
 
-  readonly property color correctionColor: card.correctionState === "none" ? QfTheme.secondaryTextColor : QfTheme.mainColor
+  // Map label style: dark glyphs with a white outline, readable on any basemap.
+  readonly property color labelColor: "#212121"
+  readonly property color labelOutlineColor: "#e6ffffff"
 
   visible: !!card.projectSettings && card.projectSettings.projectFilePath !== ""
-  radius: 4
-  color: "#66000000"
-  border.color: "#33ffffff"
-  border.width: 1
-  implicitWidth: content.implicitWidth + 16
-  implicitHeight: content.implicitHeight + 10
+  color: "transparent"
+  implicitWidth: content.implicitWidth + 8
+  implicitHeight: content.implicitHeight
   width: implicitWidth
   height: implicitHeight
 
@@ -56,18 +59,18 @@ Rectangle {
 
       Text {
         text: card.correctionText
-        color: card.correctionColor
+        color: card.labelColor
         font: QfTheme.tipFont
         style: Text.Outline
-        styleColor: "#aa000000"
+        styleColor: card.labelOutlineColor
       }
 
-      Image {
-        source: QfTheme.getThemeVectorIcon("ic_tune_white_24dp")
-        sourceSize.width: 12
-        sourceSize.height: 12
-        opacity: 0.85
-        fillMode: Image.PreserveAspectFit
+      Text {
+        text: "›"
+        color: card.labelColor
+        font: QfTheme.defaultFont
+        style: Text.Outline
+        styleColor: card.labelOutlineColor
       }
     }
 
@@ -76,18 +79,18 @@ Rectangle {
       Layout.alignment: Qt.AlignRight
 
       Image {
-        source: QfTheme.getThemeVectorIcon("ic_rtk_pole_white_24dp")
-        sourceSize.width: 11
-        sourceSize.height: 14
+        source: QfTheme.getThemeVectorIcon("ic_rtk_pole_dark_24dp")
+        sourceSize.width: 12
+        sourceSize.height: 15
         fillMode: Image.PreserveAspectFit
       }
 
       Text {
-        text: qsTr("Pole height: %1 m").arg(Number(card.projectSettings ? card.projectSettings.antennaHeight : 0).toFixed(3))
-        color: QfTheme.mainTextColor
+        text: qsTr("Pole height: %1 m").arg(Number(card.projectSettings ? card.projectSettings.antennaHeight : 0).toFixed(1))
+        color: card.labelColor
         font: QfTheme.tipFont
         style: Text.Outline
-        styleColor: "#aa000000"
+        styleColor: card.labelOutlineColor
       }
     }
   }

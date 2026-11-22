@@ -20,7 +20,7 @@ Item {
   /*! Pole height used as a seed for projects that do not have any stored value. */
   property real defaultAntennaHeight: 0
 
-  property real antennaHeight: 0
+  property real antennaHeight: 1.6
   property bool correctionEnabled: false
   // 0 = none, 1 = single point, 2 = four parameter
   property int correctionMode: 0
@@ -50,7 +50,16 @@ Item {
     }
 
     if (data && typeof data === "object") {
-      root.antennaHeight = isNaN(parseFloat(data.antennaHeight)) ? 0 : parseFloat(data.antennaHeight);
+      const storedAntennaHeight = parseFloat(data.antennaHeight);
+      let migrated = false;
+      if (isNaN(storedAntennaHeight) || storedAntennaHeight <= 0) {
+        // The old default was 0 (no pole height); treat it as unset and migrate
+        // to the 1.6 m default used by this build.
+        root.antennaHeight = root.defaultAntennaHeight > 0 ? root.defaultAntennaHeight : 1.6;
+        migrated = true;
+      } else {
+        root.antennaHeight = storedAntennaHeight;
+      }
       root.correctionEnabled = data.correctionEnabled === true;
       root.correctionMode = isNaN(parseInt(data.correctionMode)) ? 0 : parseInt(data.correctionMode);
       root.elevationMode = isNaN(parseInt(data.elevationMode)) ? 0 : parseInt(data.elevationMode);
@@ -58,8 +67,11 @@ Item {
       root.controlPoints = Array.isArray(data.controlPoints) ? data.controlPoints : [];
       root.solution = data.solution && typeof data.solution === "object" ? data.solution : ({});
       root.loading = false;
+      if (migrated) {
+        root.save();
+      }
     } else {
-      root.antennaHeight = root.defaultAntennaHeight > 0 ? root.defaultAntennaHeight : 0;
+      root.antennaHeight = root.defaultAntennaHeight > 0 ? root.defaultAntennaHeight : 1.6;
       root.correctionEnabled = false;
       root.correctionMode = 0;
       root.elevationMode = 0;

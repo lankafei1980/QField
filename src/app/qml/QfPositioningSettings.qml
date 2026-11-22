@@ -53,8 +53,8 @@ Settings {
   property int rtkSampleCount: 5
   property bool rtkAllowForcedCapture: false
 
-  property real antennaHeight: 0.0
-  property bool antennaHeightActivated: false
+  property real antennaHeight: 1.6
+  property bool antennaHeightActivated: true
   property bool skipAltitudeCorrection: false
 
   property string verticalGrid: ""

@@ -40,7 +40,7 @@ QfPopup {
     if (!popup.rtkSettings) {
       return;
     }
-    poleHeightField.text = isFinite(Number(popup.rtkSettings.antennaHeight)) ? Number(popup.rtkSettings.antennaHeight).toFixed(3) : "";
+    poleHeightField.text = isFinite(Number(popup.rtkSettings.antennaHeight)) ? Number(popup.rtkSettings.antennaHeight).toFixed(1) : "";
     elevationOffsetField.text = isFinite(Number(popup.rtkSettings.elevationOffset)) ? Number(popup.rtkSettings.elevationOffset).toFixed(3) : "";
     singleModeRadio.checked = popup.rtkSettings.correctionMode === 1;
     multiModeRadio.checked = popup.rtkSettings.correctionMode === 2;
@@ -128,34 +128,45 @@ QfPopup {
     parent: mainWindow.contentItem
     title: qsTr("Reset correction parameters")
     standardButtons: Dialog.NoButton
+    width: Math.min(mainWindow.width - QfTheme.popupScreenEdgeHorizontalMargin * 2, 400)
+    contentHeight: resetContent.height
 
-    Label {
+    Column {
+      id: resetContent
       width: parent.width
-      wrapMode: Text.WordWrap
-      text: qsTr("The solved correction parameters will be cleared. The pole height and the control points are kept.")
-    }
+      height: childrenRect.height
+      spacing: 12
 
-    RowLayout {
-      width: parent.width
-      spacing: 8
-
-      Item {
-        Layout.fillWidth: true
+      Label {
+        width: parent.width
+        wrapMode: Text.WordWrap
+        font: QfTheme.defaultFont
+        color: QfTheme.mainTextColor
+        text: qsTr("The solved correction parameters will be cleared. The pole height and the control points are kept.")
       }
 
-      QfButton {
-        text: qsTr("Cancel")
-        onClicked: resetDialog.close()
-      }
+      RowLayout {
+        width: parent.width
+        spacing: 8
 
-      QfButton {
-        text: qsTr("Reset")
-        bgcolor: QfTheme.errorColor
-        onClicked: {
-          resetDialog.close();
-          popup.rtkSettings.resetCorrection();
-          popup.syncFields();
-          displayToast(qsTr("Correction parameters have been reset, pole height kept"));
+        Item {
+          Layout.fillWidth: true
+        }
+
+        QfButton {
+          text: qsTr("Cancel")
+          onClicked: resetDialog.close()
+        }
+
+        QfButton {
+          text: qsTr("Reset")
+          bgcolor: QfTheme.errorColor
+          onClicked: {
+            resetDialog.close();
+            popup.rtkSettings.resetCorrection();
+            popup.syncFields();
+            displayToast(qsTr("Correction parameters have been reset, pole height kept"));
+          }
         }
       }
     }
@@ -235,6 +246,41 @@ QfPopup {
               const value = parseFloat(text);
               if (value >= 0) {
                 popup.rtkSettings.antennaHeight = value;
+              }
+            }
+          }
+        }
+
+        RowLayout {
+          Layout.fillWidth: true
+          spacing: 6
+
+          Item {
+            Layout.fillWidth: true
+          }
+
+          QfButton {
+            Layout.preferredWidth: 76
+            text: "1.6 m"
+            bgcolor: QfTheme.controlBackgroundAlternateColor
+            color: QfTheme.mainTextColor
+            onClicked: {
+              poleHeightField.text = "1.6";
+              if (popup.rtkSettings) {
+                popup.rtkSettings.antennaHeight = 1.6;
+              }
+            }
+          }
+
+          QfButton {
+            Layout.preferredWidth: 76
+            text: "1.8 m"
+            bgcolor: QfTheme.controlBackgroundAlternateColor
+            color: QfTheme.mainTextColor
+            onClicked: {
+              poleHeightField.text = "1.8";
+              if (popup.rtkSettings) {
+                popup.rtkSettings.antennaHeight = 1.8;
               }
             }
           }

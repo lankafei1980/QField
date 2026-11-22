@@ -5003,8 +5003,10 @@ ApplicationWindow {
       mapCanvasBackground.color = mapCanvas.mapSettings.backgroundColor;
       const titleDecorationConfiguration = projectInfo.getTitleDecorationConfiguration();
       titleDecoration.color = titleDecorationConfiguration["color"];
-      titleDecoration.style = titleDecorationConfiguration["hasOutline"] === true ? Text.Outline : Text.Normal;
-      titleDecoration.styleColor = titleDecorationConfiguration["outlineColor"];
+      // Always outline the map decorations: the default black text would
+      // otherwise disappear on the semi transparent dark background.
+      titleDecoration.style = Text.Outline;
+      titleDecoration.styleColor = titleDecorationConfiguration["hasOutline"] === true ? titleDecorationConfiguration["outlineColor"] : QfTheme.light;
       titleDecorationBackground.color = titleDecorationConfiguration["backgroundColor"];
       titleDecoration.decorationText = titleDecorationConfiguration["text"];
       if (!titleDecoration.isExpressionTemplate) {
@@ -5012,8 +5014,8 @@ ApplicationWindow {
       }
       const copyrightDecorationConfiguration = projectInfo.getCopyrightDecorationConfiguration();
       copyrightDecoration.color = copyrightDecorationConfiguration["color"];
-      copyrightDecoration.style = copyrightDecorationConfiguration["hasOutline"] === true ? Text.Outline : Text.Normal;
-      copyrightDecoration.styleColor = copyrightDecorationConfiguration["outlineColor"];
+      copyrightDecoration.style = Text.Outline;
+      copyrightDecoration.styleColor = copyrightDecorationConfiguration["hasOutline"] === true ? copyrightDecorationConfiguration["outlineColor"] : QfTheme.light;
       copyrightDecorationBackground.color = copyrightDecorationConfiguration["backgroundColor"];
       copyrightDecoration.decorationText = copyrightDecorationConfiguration["text"];
       if (!titleDecoration.isExpressionTemplate) {

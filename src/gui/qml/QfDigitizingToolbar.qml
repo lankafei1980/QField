@@ -450,35 +450,46 @@ QfVisibilityFadingRow {
     parent: mainWindow.contentItem
     title: qsTr("Forced capture")
     standardButtons: Dialog.NoButton
+    width: Math.min(mainWindow.width - QfTheme.popupScreenEdgeHorizontalMargin * 2, 400)
+    contentHeight: forceContent.height
 
-    Label {
+    Column {
+      id: forceContent
       width: parent.width
-      wrapMode: Text.WordWrap
-      text: digitizingToolbar.rtkForceMessage
-    }
+      height: childrenRect.height
+      spacing: 12
 
-    RowLayout {
-      width: parent.width
-      spacing: 8
-
-      Item {
-        Layout.fillWidth: true
+      Label {
+        width: parent.width
+        wrapMode: Text.WordWrap
+        font: QfTheme.defaultFont
+        color: QfTheme.mainTextColor
+        text: digitizingToolbar.rtkForceMessage
       }
 
-      QfButton {
-        text: qsTr("Cancel")
-        onClicked: {
-          rtkForceDialog.close();
-          rtkCapture.reset();
+      RowLayout {
+        width: parent.width
+        spacing: 8
+
+        Item {
+          Layout.fillWidth: true
         }
-      }
 
-      QfButton {
-        text: qsTr("Force capture")
-        bgcolor: QfTheme.errorColor
-        onClicked: {
-          rtkForceDialog.close();
-          rtkCapture.forceCapture();
+        QfButton {
+          text: qsTr("Cancel")
+          onClicked: {
+            rtkForceDialog.close();
+            rtkCapture.reset();
+          }
+        }
+
+        QfButton {
+          text: qsTr("Force capture")
+          bgcolor: QfTheme.errorColor
+          onClicked: {
+            rtkForceDialog.close();
+            rtkCapture.forceCapture();
+          }
         }
       }
     }

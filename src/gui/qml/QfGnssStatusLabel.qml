@@ -27,7 +27,7 @@ Rectangle {
     case "main":
       return QfTheme.mainColor;
     default:
-      return QfTheme.secondaryTextColor;
+      return "#e0e0e0";
     }
   }
 
@@ -55,7 +55,7 @@ Rectangle {
   width: implicitWidth
   height: implicitHeight
   radius: 3
-  color: "#66000000"
+  color: "#99000000"
   visible: root.statusText !== ""
 
   Text {
@@ -65,6 +65,6 @@ Rectangle {
     color: root.statusColor
     font: QfTheme.tipFont
     style: Text.Outline
-    styleColor: "#aa000000"
+    styleColor: "#ccffffff"
   }
 }

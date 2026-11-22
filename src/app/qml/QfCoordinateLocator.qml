@@ -166,7 +166,7 @@ Item {
     anchors.bottomMargin: 3
     width: crosshairCircle.width - 8
     height: averagedInfo.contentHeight
-    color: "#44263238"
+    color: "#99000000"
     radius: 3
     border.color: highlightColor
     border.width: 1.2
@@ -196,10 +196,10 @@ Item {
       id: averagedInfo
       anchors.centerIn: parent
       text: averagedPositionCount
-      color: mainColor
+      color: "#ffffff"
       font.pointSize: QfTheme.tinyFont.pointSize - 2
       style: Text.Outline
-      styleColor: highlightColor
+      styleColor: "#cc000000"
     }
   }
 
